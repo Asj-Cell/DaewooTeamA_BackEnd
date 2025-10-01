@@ -1,0 +1,16 @@
+화면 이름
+
+1. Home.vue
+2. HotelSearch.vue
+3. HotelDetail.vue
+4. PaymentPage.vue
+5. Favorites.vue
+6. Account.vue
+7. Reservation.vue
+8. PaymentAdd.vue
+9. Login.vue
+10. SignUp.vue
+11. FirstPaymentAdd.vue
+12. Findpw.vue
+13. Identification.vue
+14. Resetpw.vue

@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  mariadb:
+    container_name: mariadb_container
+    image: mariadb
+    ports:
+      - "13306:3306"
+    # 추가: MariaDB 서버의 기본 문자 인코딩을 설정하여 한글 깨짐을 방지합니다.
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mydata:/var/lib/mysql  # 데이터 영속성을 위한 볼륨
+      - ./initdb.d:/docker-entrypoint-initdb.d # 초기화 스크립트를 위한 볼륨
+    environment:
+      - TZ=Asia/Seoul
+      # .env 파일의 DB 관련 변수를 참조합니다.
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    networks:
+      - mjc_network
+
+  boot-app:
+    image: asjcell/backend_image:v1.0.9
+    container_name: boot_container
+    ports:
+      - "18888:8888"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      TZ: Asia/Seoul
+      SPRING_MAIL_USERNAME: "${SPRING_MAIL_USERNAME}"
+      SPRING_MAIL_PASSWORD: "${SPRING_MAIL_PASSWORD}"
+      JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
+      # Google OAuth 환경 변수 추가
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
+    depends_on:
+      - mariadb
+    networks:
+      - mjc_network
+
+  front-app:
+    image: dldptj/front_image:v1.0.5
+    container_name: front_container
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - boot-app
+    networks:
+      - mjc_network
+
+networks:
+  mjc_network:
+    driver: bridge

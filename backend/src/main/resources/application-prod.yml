@@ -1,0 +1,26 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb_container:3306/booking_db
+    username: book_user
+    password: book_1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+#JPA log
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm:
+          jdbc:
+            bind: TRACE
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true

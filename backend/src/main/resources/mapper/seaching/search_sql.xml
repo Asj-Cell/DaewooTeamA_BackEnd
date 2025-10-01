@@ -1,0 +1,100 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"-->
+<!--        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">-->
+<!--<mapper namespace="com.example.backend.feature.hotelfilters.mapper.HotelfiltersMapper">-->
+<!--    <select id="countBySearch" resultType="Long" parameterType="HotelFilterRequestDto">-->
+<!--        SELECT-->
+<!--        count(*) AS cnt-->
+<!--        FROM hotel AS h-->
+<!--        INNER JOIN freebies AS f ON f.hotel_id = h.id-->
+<!--        INNER JOIN amenities AS a ON a.hotel_id = h.id-->
+<!--        INNER JOIN city AS c ON h.city_id = c.id-->
+<!--        <where>-->
+<!--            1=1-->
+<!--            <if test="cityName != null and cityName != ''">-->
+<!--                AND c.city_name = #{cityName}-->
+<!--            </if>-->
+<!--            <if test="breakfastIncluded != null">-->
+<!--                AND f.breakfast_included = #{breakfastIncluded}-->
+<!--            </if>-->
+<!--            <if test="freeParking != null">-->
+<!--                AND f.free_parking = #{freeParking}-->
+<!--            </if>-->
+<!--            <if test="freeWifi != null">-->
+<!--                AND f.free_wifi = #{freeWifi}-->
+<!--            </if>-->
+<!--            <if test="airportShuttlebus != null">-->
+<!--                AND f.airport_shuttlebus = #{airportShuttlebus}-->
+<!--            </if>-->
+<!--            <if test="freeCancellation != null">-->
+<!--                AND f.free_cancellation = #{freeCancellation}-->
+<!--            </if>-->
+<!--            <if test="frontDesk24 != null">-->
+<!--                AND a.front_desk24 = #{frontDesk24}-->
+<!--            </if>-->
+<!--            <if test="airConditioner != null">-->
+<!--                AND a.air_conditioner = #{airConditioner}-->
+<!--            </if>-->
+<!--            <if test="fitnessCenter != null">-->
+<!--                AND a.fitness_center = #{fitnessCenter}-->
+<!--            </if>-->
+<!--            <if test="pool != null">-->
+<!--                AND a.free_wifi = #{pool}-->
+<!--            </if>-->
+<!--            <if test="minGrade != null and minGrade &gt;= 1">-->
+<!--                AND h.grade &gt;= #{minGrade}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
+
+<!--    <select id="findBySearch" resultType="HotelDto" parameterType="HotelFilterRequestDto">-->
+<!--        SELECT-->
+<!--        h.id;-->
+<!--        h.name;-->
+<!--        c.city_name;-->
+<!--        h.grade;-->
+<!--&#45;&#45;         private int amenitiesCount;-->
+<!--        private BigDecimal price;-->
+<!--        private String imageUrl;-->
+<!--        FROM hotel AS h-->
+<!--        INNER JOIN freebies AS f ON f.hotel_id = h.id-->
+<!--        INNER JOIN amenities AS a ON a.hotel_id = h.id-->
+<!--        INNER JOIN city AS c ON h.city_id = c.id-->
+<!--        <where>-->
+<!--            1=1-->
+<!--            <if test="cityName != null and cityName != ''">-->
+<!--                AND c.city_name = #{cityName}-->
+<!--            </if>-->
+<!--            <if test="breakfastIncluded != null">-->
+<!--                AND f.breakfast_included = #{breakfastIncluded}-->
+<!--            </if>-->
+<!--            <if test="freeParking != null">-->
+<!--                AND f.free_parking = #{freeParking}-->
+<!--            </if>-->
+<!--            <if test="freeWifi != null">-->
+<!--                AND f.free_wifi = #{freeWifi}-->
+<!--            </if>-->
+<!--            <if test="airportShuttlebus != null">-->
+<!--                AND f.airport_shuttlebus = #{airportShuttlebus}-->
+<!--            </if>-->
+<!--            <if test="freeCancellation != null">-->
+<!--                AND f.free_cancellation = #{freeCancellation}-->
+<!--            </if>-->
+<!--            <if test="frontDesk24 != null">-->
+<!--                AND a.front_desk24 = #{frontDesk24}-->
+<!--            </if>-->
+<!--            <if test="airConditioner != null">-->
+<!--                AND a.air_conditioner = #{airConditioner}-->
+<!--            </if>-->
+<!--            <if test="fitnessCenter != null">-->
+<!--                AND a.fitness_center = #{fitnessCenter}-->
+<!--            </if>-->
+<!--            <if test="pool != null">-->
+<!--                AND a.free_wifi = #{pool}-->
+<!--            </if>-->
+<!--            <if test="minGrade != null and minGrade &gt;= 1">-->
+<!--                AND h.grade &gt;= #{minGrade}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
+<!--</mapper>-->

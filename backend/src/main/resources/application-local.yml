@@ -1,0 +1,30 @@
+# main/resources/application-local.yml
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:13306/booking_db
+    username: book_user
+    password: book_1234
+  # 👇 이메일 설정을 local 프로필에 추가합니다.
+  mail:
+    username: "${SPRING_MAIL_USERNAME}"
+    password: "${SPRING_MAIL_PASSWORD}"
+
+# 👇 JWT 설정을 local 프로필에 추가합니다.
+jwt:
+  secret:
+    key: a2F카오디오a2FkaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaQ==
+
+#JPA log
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm:
+          jdbc:
+            bind: TRACE
