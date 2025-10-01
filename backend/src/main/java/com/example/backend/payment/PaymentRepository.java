@@ -13,6 +13,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     // ID와 사용자 ID로 결제 수단을 찾는 쿼리 메서드 (삭제 시 소유권 확인용)
     Optional<Payment> findByIdAndUserId(Long paymentId, Long userId);
 
-
+    boolean existsByUserIdAndPaymentNumber(Long userId, String paymentNumber);
 
 }

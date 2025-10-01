@@ -24,6 +24,10 @@ public class PaymentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        if (paymentRepository.existsByUserIdAndPaymentNumber(userId, requestDto.getPaymentNumber())) {
+            throw new IllegalArgumentException("이미 등록된 카드입니다.");
+        }
+
         // 카드 번호로 카드사 이름을 자동으로 판별
         String paymentName = CardIssuerLookupUtil.getIssuer(requestDto.getPaymentNumber());
 
