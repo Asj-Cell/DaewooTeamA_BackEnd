@@ -1,6 +1,10 @@
 package com.example.backend.user;
 
+import com.example.backend.Reservation.Reservation;
+import com.example.backend.Reservation.ReservationRepository;
 import com.example.backend.common.util.FileStorageService;
+import com.example.backend.pay.Pay;
+import com.example.backend.pay.PayRepository;
 import com.example.backend.payment.PaymentRepository;
 import com.example.backend.user.dto.*;
 import com.example.backend.user.entity.User;
@@ -21,6 +25,8 @@ public class UserService {
     private final PaymentRepository paymentRepository;
     private final FileStorageService fileStorageService;
     private final PasswordEncoder passwordEncoder;
+    private final ReservationRepository reservationRepository;
+    private final PayRepository payRepository;
 
     @Transactional
     public void changeUserPassword(Long userId, ChangePasswordRequestDto requestDto) {
@@ -141,5 +147,22 @@ public class UserService {
         return paymentRepository.findAllByUserId(userId).stream()
                 .map(UserProfilePaymentMethodDto::new) // Payment -> DTO 변환
                 .toList();
+    }
+    //유저 예약을 삭제합니다
+    @Transactional
+    public void cancelUserReservation(Long userId, Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약을 찾을 수 없습니다. ID: " + reservationId));
+
+        if (!reservation.getUser().getId().equals(userId)) {
+            throw new SecurityException("예약을 취소할 권한이 없습니다.");
+        }
+
+        Pay pay = payRepository.findByReservation_Id(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("관련된 결제 내역을 찾을 수 없습니다."));
+
+        payRepository.delete(pay);
+
+        reservationRepository.delete(reservation);
     }
 }
