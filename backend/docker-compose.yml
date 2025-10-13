@@ -23,7 +23,7 @@ services:
       - mjc_network
 
   boot-app:
-    image: asjcell/backend_image:v1.0.9
+    image: asjcell/backend_image:v1.0.14
     container_name: boot_container
     ports:
       - "18888:8888"
@@ -42,7 +42,7 @@ services:
       - mjc_network
 
   front-app:
-    image: dldptj/front_image:v1.0.5
+    image: dldptj/front_image:v1.0.12
     container_name: front_container
     ports:
       - "80:80"

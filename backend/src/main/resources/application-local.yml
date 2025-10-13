@@ -28,3 +28,4 @@ logging:
         orm:
           jdbc:
             bind: TRACE
+

@@ -239,11 +239,11 @@ CREATE TABLE `pay` (
 -- 사용자 데이터
 INSERT INTO `user` (`id`, `user_name`, `email`, `password`, `phone_number`, `address`, `birth_date`, `image_url`, `background_image_url`)
 VALUES
-    (1, '김민준', 'minjun.kim@example.com', '$2a$10$E/a3J5..L27GjQW3.p2yC.i2u.j5.a1b.c1d.e1f.g1h', '010-1234-5678', '서울시 강남구', '1990-01-15', '/uploads/profile1.png', '/uploads/bg1.png'),
-    (2, '이서연', 'seoyeon.lee@example.com', '$2a$10$E/a3J5..L27GjQW3.p2yC.i2u.j5.a1b.c1d.e1f.g1h', '010-2345-6789', '부산시 해운대구', '1992-05-20', '/uploads/profile2.png', '/uploads/bg2.png'),
-    (3, '박준호', 'junho.park@example.com', '$2a$10$E/a3J5..L27GjQW3.p2yC.i2u.j5.a1b.c1d.e1f.g1h', '010-3456-7890', '인천시 연수구', '1988-08-10', '/uploads/profile3.png', '/uploads/bg3.png'),
-    (4, '최지우', 'jiwoo.choi@example.com', '$2a$10$E/a3J5..L27GjQW3.p2yC.i2u.j5.a1b.c1d.e1f.g1h', '010-4567-8901', '대구시 수성구', '1995-11-25', '/uploads/profile4.png', '/uploads/bg4.png'),
-    (5, '정유진', 'yujin.jung@example.com', '$2a$10$E/a3J5..L27GjQW3.p2yC.i2u.j5.a1b.c1d.e1f.g1h', '010-5678-9012', '광주시 서구', '1998-03-30', '/uploads/profile5.png', '/uploads/bg5.png');
+    (1, '김민준', 'minjun.kim@example.com', '$2a$10$zvcbz5AhunlTYx9Qc1tpUuJWSC1swxWHNok6Q/3q8D5xb.9fPfqAO', '010-1234-5678', '서울시 강남구', '1990-01-15', '/uploads/profile1.png', '/uploads/bg1.png'),
+    (2, '이서연', 'seoyeon.lee@example.com', '$2a$10$zvcbz5AhunlTYx9Qc1tpUuJWSC1swxWHNok6Q/3q8D5xb.9fPfqAO', '010-2345-6789', '부산시 해운대구', '1992-05-20', '/uploads/profile2.png', '/uploads/bg2.png'),
+    (3, '박준호', 'junho.park@example.com', '$2a$10$zvcbz5AhunlTYx9Qc1tpUuJWSC1swxWHNok6Q/3q8D5xb.9fPfqAO', '010-3456-7890', '인천시 연수구', '1988-08-10', '/uploads/profile3.png', '/uploads/bg3.png'),
+    (4, '최지우', 'jiwoo.choi@example.com', '$2a$10$zvcbz5AhunlTYx9Qc1tpUuJWSC1swxWHNok6Q/3q8D5xb.9fPfqAO', '010-4567-8901', '대구시 수성구', '1995-11-25', '/uploads/profile4.png', '/uploads/bg4.png'),
+    (5, '정유진', 'yujin.jung@example.com', '$2a$10$zvcbz5AhunlTYx9Qc1tpUuJWSC1swxWHNok6Q/3q8D5xb.9fPfqAO', '010-5678-9012', '광주시 서구', '1998-03-30', '/uploads/profile5.png', '/uploads/bg5.png');
 
 -- 도시 데이터
 INSERT INTO `city` (`id`, `city_name`) VALUES
