@@ -7,9 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Tag(name = "Favorites API", description = "✅ 인증 필요 | 찜 목록 관련 API")
@@ -23,5 +26,17 @@ public class FavoritesController {
         Long userId = Long.parseLong(userDetails.getUsername());
         List<HotelDto> favoriteHotels = favoritesService.getFavoriteHotels(userId);
         return ResponseEntity.ok(favoriteHotels);
+    }
+    @PostMapping("/api/favorites/{hotelId}")
+    public ResponseEntity<Map<String, String>> toggleFavorite(
+            @PathVariable Long hotelId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        boolean isAdded = favoritesService.toggleFavorite(userId, hotelId);
+
+        String message = isAdded ? "찜 목록에 추가되었습니다." : "찜 목록에서 삭제되었습니다.";
+
+        return ResponseEntity.ok(Map.of("message", message));
     }
 }

@@ -93,4 +93,14 @@ public class UserController {
         UserProfileAllResponseDto updatedProfile = userService.updateUserProfileInfo(userId, requestDto);
         return ResponseEntity.ok(ApiResponse.success(updatedProfile));
     }
+
+    @Operation(summary = "내 예약 취소", description = "로그인한 사용자의 특정 예약을 취소합니다.")
+    @DeleteMapping("/me/reservations/{reservationId}")
+    public ResponseEntity<ApiResponse<String>> cancelReservation(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long reservationId) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        userService.cancelUserReservation(userId, reservationId);
+        return ResponseEntity.ok(ApiResponse.success("예약이 성공적으로 취소되었습니다."));
+    }
 }
