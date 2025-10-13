@@ -123,10 +123,15 @@ public class HotelFiltersService {
 
     private BigDecimal getLowestAvailablePrice(Hotel h, HotelFilterRequestDto request) {
         return h.getRooms().stream()
+                // 1. 기존 필터: 날짜로 예약 가능한 방 필터링
                 .filter(r -> isRoomAvailable(r, request.getCheckInDate(), request.getCheckOutDate()))
+                // 2. 기존 필터: 최소 수용 인원 필터링
                 .filter(r -> request.getMinAvailableRooms() == null || r.getMaxGuests() >= request.getMinAvailableRooms())
+                .filter(r -> request.getMinPrice() == null || r.getPrice().compareTo(request.getMinPrice()) >= 0)
+                .filter(r -> request.getMaxPrice() == null || r.getPrice().compareTo(request.getMaxPrice()) <= 0)
+
                 .map(Room::getPrice)
                 .min(BigDecimal::compareTo)
-                .orElse(BigDecimal.ZERO);
+                .orElse(null); // 방 없으면 Null
     }
 }
