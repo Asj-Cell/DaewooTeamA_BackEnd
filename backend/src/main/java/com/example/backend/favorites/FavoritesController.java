@@ -1,6 +1,6 @@
 package com.example.backend.favorites;
 
-import com.example.backend.feature.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

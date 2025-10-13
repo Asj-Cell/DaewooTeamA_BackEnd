@@ -1,4 +1,4 @@
-package com.example.backend.pay;
+package com.example.backend.pay.entity;
 
 import com.example.backend.Reservation.Reservation;
 import com.example.backend.payment.entity.Payment;

@@ -1,4 +1,4 @@
-package com.example.backend.feature.hotelfilters.detail;
+package com.example.backend.hotel.hotelfilters.detail;
 
 import com.example.backend.favorites.FavoritesRepository;
 import com.example.backend.hotel.HotelRepository;

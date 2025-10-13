@@ -1,6 +1,6 @@
 package com.example.backend.favorites;
 
-import com.example.backend.feature.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelDto;
 import com.example.backend.favorites.entity.Favorites;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.entity.Hotel;

@@ -1,5 +1,6 @@
 package com.example.backend.pay;
 
+import com.example.backend.pay.entity.Pay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

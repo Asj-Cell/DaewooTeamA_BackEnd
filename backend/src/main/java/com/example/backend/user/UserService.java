@@ -3,7 +3,7 @@ package com.example.backend.user;
 import com.example.backend.Reservation.Reservation;
 import com.example.backend.Reservation.ReservationRepository;
 import com.example.backend.common.util.FileStorageService;
-import com.example.backend.pay.Pay;
+import com.example.backend.pay.entity.Pay;
 import com.example.backend.pay.PayRepository;
 import com.example.backend.payment.PaymentRepository;
 import com.example.backend.user.dto.*;
@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

@@ -23,7 +23,7 @@ services:
       - mjc_network
 
   boot-app:
-    image: asjcell/backend_image:v1.0.14
+    image: asjcell/backend_image:v1.0.15
     container_name: boot_container
     ports:
       - "18888:8888"

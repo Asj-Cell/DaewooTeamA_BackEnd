@@ -1,15 +1,10 @@
-package com.example.backend.feature.hotelfilters;
+package com.example.backend.hotel.hotelfilters;
 
-import com.example.backend.feature.hotelfilters.dto.HotelDto;
-import com.example.backend.feature.hotelfilters.dto.HotelFilterRequestDto;
-import com.example.backend.user.dto.UserProfileRequestDto;
-import io.swagger.v3.oas.annotations.Operation;
+import com.example.backend.hotel.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelFilterRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,8 +17,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
