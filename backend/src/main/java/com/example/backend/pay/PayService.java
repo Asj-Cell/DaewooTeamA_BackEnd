@@ -3,6 +3,7 @@ package com.example.backend.pay;
 import com.example.backend.Reservation.Reservation;
 import com.example.backend.Reservation.ReservationRepository;
 import com.example.backend.pay.dto.FinalPaymentRequestDto;
+import com.example.backend.pay.entity.Pay;
 import com.example.backend.payment.PaymentRepository;
 import com.example.backend.payment.entity.Payment;
 import com.example.backend.room.RoomRepository;

@@ -1,4 +1,4 @@
-package com.example.backend.feature.hotelfilters.detail;
+package com.example.backend.hotel.hotelfilters.detail;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

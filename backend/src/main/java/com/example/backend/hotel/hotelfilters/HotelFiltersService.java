@@ -1,9 +1,9 @@
-package com.example.backend.feature.hotelfilters;
+package com.example.backend.hotel.hotelfilters;
 
 import com.example.backend.favorites.FavoritesRepository;
 import com.example.backend.hotel.entity.Hotel;
-import com.example.backend.feature.hotelfilters.dto.HotelDto;
-import com.example.backend.feature.hotelfilters.dto.HotelFilterRequestDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelFilterRequestDto;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.entity.HotelImage;
 import com.example.backend.room.entity.Room;

@@ -1,9 +1,9 @@
-package com.example.backend.feature.hotelfilters;
+package com.example.backend.hotel.hotelfilters;
 
 import com.example.backend.amenities.entity.Amenities;
 import com.example.backend.hotel.entity.Freebies;
 import com.example.backend.hotel.entity.Hotel;
-import com.example.backend.feature.hotelfilters.dto.HotelFilterRequestDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelFilterRequestDto;
 import com.example.backend.Reservation.Reservation;
 import com.example.backend.room.entity.Room;
 import jakarta.persistence.criteria.Join;
