@@ -148,7 +148,7 @@ public class UserService {
                 .map(UserProfilePaymentMethodDto::new) // Payment -> DTO 변환
                 .toList();
     }
-    //유저 예약을 삭제합니다
+    //유저 예약 삭제기능
     @Transactional
     public void cancelUserReservation(Long userId, Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
