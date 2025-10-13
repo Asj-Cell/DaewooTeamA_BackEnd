@@ -1,6 +1,6 @@
 package com.example.backend.payment.entity;
 
-import com.example.backend.pay.Pay;
+import com.example.backend.pay.entity.Pay;
 import com.example.backend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;

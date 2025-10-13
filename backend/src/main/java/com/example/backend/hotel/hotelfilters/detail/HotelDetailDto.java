@@ -1,9 +1,7 @@
-package com.example.backend.feature.hotelfilters.detail;
+package com.example.backend.hotel.hotelfilters.detail;
 
-import com.example.backend.feature.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelDto;
 import com.example.backend.room.dto.RoomDto;
-import com.example.backend.room.dto.RoomImgDto;
-import com.example.backend.room.entity.RoomImg;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

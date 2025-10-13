@@ -1,4 +1,4 @@
-package com.example.backend.feature.hotelfilters.dto;
+package com.example.backend.hotel.hotelfilters.dto;
 
 import com.example.backend.user.dto.UserProfileRequestDto;
 import lombok.AllArgsConstructor;
