@@ -39,3 +39,7 @@ jwt:
 app:
   oauth2:
     authorized-redirect-uri: http://localhost:80/homepage
+
+toss:
+  payments:
+    secret-key: "test_sk_zXLkG525xV51lQW1dDe43n07ylmO"
