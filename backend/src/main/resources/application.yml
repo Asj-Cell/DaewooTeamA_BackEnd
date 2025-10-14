@@ -42,4 +42,5 @@ app:
 
 toss:
   payments:
-    secret-key: "test_sk_zXLkG525xV51lQW1dDe43n07ylmO"
+    # ✅ 백엔드 전용: 결제 승인/취소 시 서버에서만 사용하는 비밀 키
+    secret-key: "test_sk_vZnjEJeQVxmzMzGjKKl9rPmOoBN0"
