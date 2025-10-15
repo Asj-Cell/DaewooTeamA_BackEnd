@@ -38,7 +38,7 @@ jwt:
 
 app:
   oauth2:
-    authorized-redirect-uri: http://localhost:80/homepage
+    authorized-redirect-uri: http://localhost:8888/check.html
 
 toss:
   payments:

@@ -63,7 +63,13 @@ public class SecurityConfig {
                                 //임시 결제 화면
                                 "/success.html",
                                 "/fail.html",
-                                "/index.js"
+                                "/check.html",
+                                "/api/pay",          // 일반 결제 승인 API
+                                "/api/pay/brandpay", // 브랜드페이 승인 API
+                                "/api/pay/*/cancel",
+                                "/*.js",
+                                "/*.css"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
