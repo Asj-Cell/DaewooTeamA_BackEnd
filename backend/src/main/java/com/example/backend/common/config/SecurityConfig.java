@@ -59,7 +59,11 @@ public class SecurityConfig {
                                 "/api/hotels/filter",
                                 "/api/hotels/detail/**",
                                 "/uploads/**", // 업로드된 이미지 경로 허용
-                                "/images/**"
+                                "/images/**",
+                                //임시 결제 화면
+                                "/checkout.html",
+                                "/success.html",
+                                "/fail.html"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
