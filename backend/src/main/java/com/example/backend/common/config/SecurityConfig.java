@@ -42,6 +42,10 @@ public class SecurityConfig {
                 // 1. CORS 설정 활성화
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
+                //로그인 관련 jwt로만 로그인 두줄
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // 2. Preflight OPTIONS 요청은 인증 없이 허용
