@@ -42,6 +42,10 @@ public class SecurityConfig {
                 // 1. CORS 설정 활성화
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
+                //로그인 관련 jwt로만 로그인 두줄
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // 2. Preflight OPTIONS 요청은 인증 없이 허용
@@ -59,7 +63,17 @@ public class SecurityConfig {
                                 "/api/hotels/filter",
                                 "/api/hotels/detail/**",
                                 "/uploads/**", // 업로드된 이미지 경로 허용
-                                "/images/**"
+                                "/images/**",
+                                //임시 결제 화면
+                                "/success.html",
+                                "/fail.html",
+                                "/check.html",
+                                "/api/pay",          // 일반 결제 승인 API
+                                "/api/pay/brandpay", // 브랜드페이 승인 API
+                                "/api/pay/*/cancel",
+                                "/*.js",
+                                "/*.css"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

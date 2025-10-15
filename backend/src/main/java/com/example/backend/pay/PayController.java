@@ -1,11 +1,28 @@
 package com.example.backend.pay;
 
 import com.example.backend.pay.dto.FinalPaymentRequestDto;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pay")
@@ -13,12 +30,50 @@ import org.springframework.web.bind.annotation.*;
 public class PayController {
 
     private final PayService payService;
-    //헤더 키 Authorization -> 받은 토큰, Content-Type -> JSON
+
+    /**
+     * 결제 승인 및 예약 생성 요청
+     */
     @PostMapping
-    public ResponseEntity<Long> processPaymentAndCreateReservation(@RequestBody FinalPaymentRequestDto requestDto,
-                                                                   @AuthenticationPrincipal UserDetails userDetails) {
-        Long userId = Long.parseLong(userDetails.getUsername());
-        Long reservationId = payService.processPaymentAndCreateReservation(requestDto, userId);
-        return ResponseEntity.ok(reservationId);
+    public ResponseEntity<?> processPaymentAndCreateReservation(@RequestBody FinalPaymentRequestDto requestDto,
+                                                                @AuthenticationPrincipal UserDetails userDetails) {
+        //  try-catch 구문을 추가하여 서비스단에서 발생하는 예외를 처리합니다.
+        try {
+//            Long userId = Long.parseLong(userDetails.getUsername());
+            //  PayService의 메소드가 Exception을 던질 수 있으므로 try-catch로 감싸줍니다.
+            Long userId = 6L;
+            Long reservationId = payService.processPaymentAndCreateReservation(requestDto, userId);
+            //  성공 시 예약 ID와 200 OK 상태를 반환합니다.
+            return ResponseEntity.ok(reservationId);
+        } catch (Exception e) {
+            //  실패 시 에러 메시지와 400 Bad Request 상태를 반환합니다.
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * 결제 취소 요청 시 Body에 취소 사유를 담기 위한 DTO
+     */
+    @Getter
+    @Setter
+    public static class CancelRequestDto {
+        private String cancelReason;
+    }
+
+    /**
+     * 결제 및 예약 취소 요청
+     */
+    @PostMapping("/{reservationId}/cancel")
+    public ResponseEntity<String> cancelPaymentAndReservation(
+            @PathVariable Long reservationId,
+            @RequestBody CancelRequestDto requestDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Long userId = Long.parseLong(userDetails.getUsername());
+            payService.cancelPaymentAndReservation(reservationId, requestDto.getCancelReason(), userId);
+            return ResponseEntity.ok("예약 및 결제가 성공적으로 취소되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

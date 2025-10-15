@@ -25,6 +25,15 @@ public class WebConfig implements WebMvcConfigurer {
                         "https://49.247.160.225",
                         "http://13.125.235.75",
                         "https://13.125.235.75"
+
+//                        곧 없앨확률 높음 에러가 없다면
+//                        //토스페이
+//                        "http://117.52.3.202",
+//                        "http://117.52.3.210",
+//                        "http://211.115.96.202",
+//                        "http://211.115.96.210",
+//                        "http://106.249.5.202",
+//                        "http://106.249.5.210"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                 .allowedHeaders("*")

@@ -52,8 +52,9 @@ public class Payment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "payment")
-    private List<Pay> pays = new ArrayList<>();
+//    토스를 사용하면서 일단 못쓰게되는...
+//    @OneToMany(mappedBy = "payment")
+//    private List<Pay> pays = new ArrayList<>();
 
     @Column(name = "is_deleted")
     private boolean isDeleted = false;

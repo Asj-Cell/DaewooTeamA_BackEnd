@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/hotels/{hotelId}/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Review API", description = "✅ 인증 필요 (조회 제외) | 리뷰 관련 API")
+@Tag(name = "Review API", description = " 인증 필요 (조회 제외) | 리뷰 관련 API")
 public class ReviewController {
 
     private final ReviewService reviewService;

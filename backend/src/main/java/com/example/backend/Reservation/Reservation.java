@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -13,6 +16,8 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "reservation")
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE reservation SET is_deleted = true WHERE id = ?") //delete 시 update 쿼리 실행
+@Where(clause = "is_deleted = false") //조회할때 is_deleted가 안된건만 조회
 public class Reservation {
 
     @Id
@@ -34,6 +39,9 @@ public class Reservation {
 
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
+
+    @Column(name = "is_deleted") // 소프트 삭제를 위한 플래그 컬럼 추가
+    private boolean isDeleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)

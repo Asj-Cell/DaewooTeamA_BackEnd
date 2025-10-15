@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/payments") // 기본 경로 변경
 @RequiredArgsConstructor
-@Tag(name = "Payment API", description = "✅ 인증 필요 | 결제 관련 API")
+@Tag(name = "Payment API", description = " 인증 필요 | 결제 관련 API")
 public class PaymentController {
 
     private final PaymentService paymentService;

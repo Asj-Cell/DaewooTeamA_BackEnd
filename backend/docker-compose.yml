@@ -5,6 +5,7 @@ services:
     image: mariadb
     ports:
       - "13306:3306"
+    # 추가: MariaDB 서버의 기본 문자 인코딩을 설정하여 한글 깨짐을 방지합니다.
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci

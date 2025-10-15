@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS `user`;
 
 -- 2. 테이블 생성 (DDL)
 
+-- ... (user, city, hotel 등 다른 테이블 생성 구문은 변경 사항 없으므로 생략) ...
 -- 사용자 테이블
 CREATE TABLE `user` (
                         `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -184,7 +185,8 @@ CREATE TABLE `review` (
                           CONSTRAINT `FK_review_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 예약 테이블
+
+--  예약 테이블: is_deleted 컬럼 추가
 CREATE TABLE `reservation` (
                                `id` bigint(20) NOT NULL AUTO_INCREMENT,
                                `check_in_date` date NOT NULL,
@@ -194,6 +196,7 @@ CREATE TABLE `reservation` (
                                `total_price` decimal(10,2) NOT NULL,
                                `room_id` bigint(20) NOT NULL,
                                `user_id` bigint(20) NOT NULL,
+                               `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, --  소프트 삭제를 위한 컬럼 추가
                                PRIMARY KEY (`id`),
                                KEY `FK_reservation_to_room` (`room_id`),
                                KEY `FK_reservation_to_user` (`user_id`),
@@ -201,7 +204,7 @@ CREATE TABLE `reservation` (
                                CONSTRAINT `FK_reservation_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 결제 수단 테이블
+-- 결제 수단 테이블 (변경 없음)
 CREATE TABLE `payment` (
                            `id` bigint(20) NOT NULL AUTO_INCREMENT,
                            `payment_name` varchar(100) DEFAULT NULL,
@@ -218,17 +221,18 @@ CREATE TABLE `payment` (
                            CONSTRAINT `FK_payment_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 결제 내역 테이블
+--  결제 내역 테이블: payment_key 추가, payment_id 제거
 CREATE TABLE `pay` (
                        `id` BIGINT NOT NULL AUTO_INCREMENT,
+                       `payment_key` VARCHAR(255) UNIQUE, --  토스페이먼츠 키 저장을 위한 컬럼 추가
                        `payment_gateway` VARCHAR(20),
                        `redate` DATETIME(6),
                        `price` DECIMAL(10, 2),
-                       `payment_id` BIGINT,
+    -- `payment_id` BIGINT, --  더 이상 사용하지 않으므로 제거
                        `user_id` BIGINT,
                        `reservation_id` BIGINT,
                        PRIMARY KEY (`id`),
-                       CONSTRAINT `FK_pay_to_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`),
+    -- CONSTRAINT `FK_pay_to_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`), --  관련 제약조건 제거
                        CONSTRAINT `FK_pay_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
                        CONSTRAINT `FK_pay_to_reservation` FOREIGN KEY (`reservation_id`) REFERENCES `reservation` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -236,6 +240,7 @@ CREATE TABLE `pay` (
 
 -- 3. 데이터 삽입 (DML)
 
+-- ... (user, city, hotel 등 다른 데이터 삽입 구문은 변경 사항 없으므로 생략) ...
 -- 사용자 데이터
 INSERT INTO `user` (`id`, `user_name`, `email`, `password`, `phone_number`, `address`, `birth_date`, `image_url`, `background_image_url`)
 VALUES
@@ -399,7 +404,6 @@ INSERT INTO `review` (`id`, `user_id`, `hotel_id`, `content`, `user_rating_score
                                                                                        (6, 1, 6, '파리의 중심에서 럭셔리한 경험을 했습니다. 잊지 못할 거예요.', 5.0),
                                                                                        (7, 2, 7, '역사와 전통이 느껴지는 멋진 호텔이었습니다.', 4.7),
                                                                                        (8, 3, 8, '신주쿠의 야경이 한눈에 들어오는 전망이 최고였습니다.', 4.9);
-
 -- 예약 데이터
 INSERT INTO `reservation` (`id`, `user_id`, `room_id`, `check_in_date`, `check_out_date`, `discount`, `taxes`, `total_price`) VALUES
                                                                                                                                   (1, 1, 2, '2025-10-10', '2025-10-12', 50000.00, 30000.00, 680000.00),
@@ -416,10 +420,10 @@ INSERT INTO `payment` (`id`, `user_id`, `payment_name`, `payment_number`, `expir
                                                                                                                                                      (4, 4, '현대카드', '4567-8901-2345-6789', '2026-09-30', '456', '최지우', '대한민국', '2025-04-10 16:45:00'),
                                                                                                                                                      (5, 5, '우리카드', '5678-9012-3456-7890', '2028-08-31', '567', '정유진', '대한민국', '2025-05-12 18:20:00');
 
--- 결제 내역 데이터
-INSERT INTO `pay` (`id`, `reservation_id`, `payment_id`, `user_id`, `payment_gateway`, `redate`, `price`) VALUES
-                                                                                                              (1, 1, 1, 1, '카카오페이', '2025-10-01 14:00:00', 680000.00),
-                                                                                                              (2, 2, 2, 2, '네이버페이', '2025-11-01 16:30:00', 1180000.00),
-                                                                                                              (3, 3, 3, 3, '토스페이', '2025-12-01 18:00:00', 429000.00),
-                                                                                                              (4, 4, 4, 4, '신용카드', '2026-01-20 20:15:00', 1713000.00),
-                                                                                                              (5, 5, 5, 5, '계좌이체', '2026-02-20 22:00:00', 1848000.00);
+--  결제 내역 데이터: payment_id 제거하고 payment_key 추가
+INSERT INTO `pay` (`id`, `reservation_id`, `user_id`, `payment_gateway`, `payment_key`, `redate`, `price`) VALUES
+                                                                                                               (1, 1, 1, '토스페이먼츠', 'test_pk_1_placeholder', '2025-10-01 14:00:00', 680000.00),
+                                                                                                               (2, 2, 2, '토스페이먼츠', 'test_pk_2_placeholder', '2025-11-01 16:30:00', 1180000.00),
+                                                                                                               (3, 3, 3, '토스페이먼츠', 'test_pk_3_placeholder', '2025-12-01 18:00:00', 429000.00),
+                                                                                                               (4, 4, 4, '토스페이먼츠', 'test_pk_4_placeholder', '2026-01-20 20:15:00', 1713000.00),
+                                                                                                               (5, 5, 5, '토스페이먼츠', 'test_pk_5_placeholder', '2026-02-20 22:00:00', 1848000.00);
