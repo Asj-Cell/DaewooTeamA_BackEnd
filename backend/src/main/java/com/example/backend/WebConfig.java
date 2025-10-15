@@ -22,7 +22,16 @@ public class WebConfig implements WebMvcConfigurer {
                         "https://49.247.160.225",
 
                         "http://13.125.235.75",
-                        "https://13.125.235.75"
+                        "https://13.125.235.75",
+
+
+                        //토스페이
+                        "117.52.3.202",
+                        "117.52.3.210",
+                        "211.115.96.202",
+                        "211.115.96.210",
+                        "106.249.5.202",
+                        "106.249.5.210"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")

@@ -61,9 +61,9 @@ public class SecurityConfig {
                                 "/uploads/**", // 업로드된 이미지 경로 허용
                                 "/images/**",
                                 //임시 결제 화면
-                                "/checkout.html",
                                 "/success.html",
-                                "/fail.html"
+                                "/fail.html",
+                                "/index.js"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>결제 성공 처리 중...</title>
+</head>
+<body>
+<h2>결제를 완료하고, 서버에 승인 요청을 보내는 중입니다...</h2>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentKey = urlParams.get("paymentKey");
+    const orderId = urlParams.get("orderId");
+    const amount = urlParams.get("amount");
+
+    async function confirmPayment() {
+        const requestData = {
+            paymentKey: paymentKey, orderId: orderId, amount: amount,
+            roomId: 1, checkInDate: "2025-11-20", checkOutDate: "2025-11-22"
+        };
+
+        const response = await fetch("/api/pay", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestData),
+        });
+
+        if (response.ok) {
+            const reservationId = await response.json();
+            alert("✅ 최종 승인 성공! 예약 ID: " + reservationId);
+        } else {
+            const errorBody = await response.json();
+            alert("❌ 승인 실패: " + (errorBody.message || "알 수 없는 오류"));
+        }
+    }
+    confirmPayment();
+</script>
+</body>
+</html>
