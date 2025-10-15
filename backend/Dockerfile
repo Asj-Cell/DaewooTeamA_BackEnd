@@ -1,13 +1,27 @@
 FROM openjdk:21-jdk-slim
 
+# Set timezone
+ENV TZ=Asia/Seoul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Set working directory
 WORKDIR /app
 
-# Copy the built JAR file (adjust the path and name)
+# Create logs directory
+RUN mkdir -p /app/logs
+
+# Copy JAR file
 COPY build/libs/backend.jar backend.jar
 
-# 환경변수 선언
-ENV SPRING_PROFILE=prod
+# Set default profile
+ENV SPRING_PROFILES_ACTIVE=prod
 
-# Set command to run the JAR
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=${SPRING_PROFILE}", "backend.jar"]
+# Expose port
+EXPOSE 8888
+
+# Run application
+ENTRYPOINT ["java", \
+  "-XX:+UseContainerSupport", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-jar", \
+  "backend.jar"]
