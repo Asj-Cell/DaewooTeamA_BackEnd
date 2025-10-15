@@ -22,15 +22,15 @@ public class PayController {
     @PostMapping
     public ResponseEntity<?> processPaymentAndCreateReservation(@RequestBody FinalPaymentRequestDto requestDto,
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        // ✅ try-catch 구문을 추가하여 서비스단에서 발생하는 예외를 처리합니다.
+        //  try-catch 구문을 추가하여 서비스단에서 발생하는 예외를 처리합니다.
         try {
             Long userId = Long.parseLong(userDetails.getUsername());
-            // ✅ PayService의 메소드가 Exception을 던질 수 있으므로 try-catch로 감싸줍니다.
+            //  PayService의 메소드가 Exception을 던질 수 있으므로 try-catch로 감싸줍니다.
             Long reservationId = payService.processPaymentAndCreateReservation(requestDto, userId);
-            // ✅ 성공 시 예약 ID와 200 OK 상태를 반환합니다.
+            //  성공 시 예약 ID와 200 OK 상태를 반환합니다.
             return ResponseEntity.ok(reservationId);
         } catch (Exception e) {
-            // ✅ 실패 시 에러 메시지와 400 Bad Request 상태를 반환합니다.
+            //  실패 시 에러 메시지와 400 Bad Request 상태를 반환합니다.
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
