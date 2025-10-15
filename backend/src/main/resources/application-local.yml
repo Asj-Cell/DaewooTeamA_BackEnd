@@ -4,30 +4,35 @@ spring:
   config:
     activate:
       on-profile: local
+
+  # --- 로컬 DB 설정 ---
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://localhost:13306/booking_db
-    username: book_user
-    password: book_1234
-  # 👇 이메일 설정을 local 프로필에 추가합니다.
-  mail:
-    username: "${SPRING_MAIL_USERNAME}"
-    password: "${SPRING_MAIL_PASSWORD}"
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
 
-# 👇 JWT 설정을 local 프로필에 추가합니다.
-jwt:
-  secret:
-    key: a2F카오디오a2FkaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaQ==
+  # --- 로컬 JPA 설정 ---
+  jpa:
+    hibernate:
+      ddl-auto: update  # 개발시 자동 스키마 업데이트
+    properties:
+      hibernate:
+        show_sql: true  # 로컬에서는 콘솔에도 출력
 
-#JPA log
+# --- OAuth2 로컬 리다이렉트 URI ---
+app:
+  oauth2:
+    authorized-redirect-uri: http://localhost:80/homepage
+
+# --- 로컬 개발용 상세 로그 ---
 logging:
   level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        orm:
-          jdbc:
-            bind: TRACE
+    root: INFO
+    com.example.backend: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.springframework.security: DEBUG
 
 toss:
   payments:
