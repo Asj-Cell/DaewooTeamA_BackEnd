@@ -186,7 +186,7 @@ CREATE TABLE `review` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- ✅ 예약 테이블: is_deleted 컬럼 추가
+--  예약 테이블: is_deleted 컬럼 추가
 CREATE TABLE `reservation` (
                                `id` bigint(20) NOT NULL AUTO_INCREMENT,
                                `check_in_date` date NOT NULL,
@@ -196,7 +196,7 @@ CREATE TABLE `reservation` (
                                `total_price` decimal(10,2) NOT NULL,
                                `room_id` bigint(20) NOT NULL,
                                `user_id` bigint(20) NOT NULL,
-                               `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, -- ✅ 소프트 삭제를 위한 컬럼 추가
+                               `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, --  소프트 삭제를 위한 컬럼 추가
                                PRIMARY KEY (`id`),
                                KEY `FK_reservation_to_room` (`room_id`),
                                KEY `FK_reservation_to_user` (`user_id`),
@@ -221,18 +221,18 @@ CREATE TABLE `payment` (
                            CONSTRAINT `FK_payment_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ✅ 결제 내역 테이블: payment_key 추가, payment_id 제거
+--  결제 내역 테이블: payment_key 추가, payment_id 제거
 CREATE TABLE `pay` (
                        `id` BIGINT NOT NULL AUTO_INCREMENT,
-                       `payment_key` VARCHAR(255) UNIQUE, -- ✅ 토스페이먼츠 키 저장을 위한 컬럼 추가
+                       `payment_key` VARCHAR(255) UNIQUE, --  토스페이먼츠 키 저장을 위한 컬럼 추가
                        `payment_gateway` VARCHAR(20),
                        `redate` DATETIME(6),
                        `price` DECIMAL(10, 2),
-    -- `payment_id` BIGINT, -- ✅ 더 이상 사용하지 않으므로 제거
+    -- `payment_id` BIGINT, --  더 이상 사용하지 않으므로 제거
                        `user_id` BIGINT,
                        `reservation_id` BIGINT,
                        PRIMARY KEY (`id`),
-    -- CONSTRAINT `FK_pay_to_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`), -- ✅ 관련 제약조건 제거
+    -- CONSTRAINT `FK_pay_to_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`), --  관련 제약조건 제거
                        CONSTRAINT `FK_pay_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
                        CONSTRAINT `FK_pay_to_reservation` FOREIGN KEY (`reservation_id`) REFERENCES `reservation` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -420,7 +420,7 @@ INSERT INTO `payment` (`id`, `user_id`, `payment_name`, `payment_number`, `expir
                                                                                                                                                      (4, 4, '현대카드', '4567-8901-2345-6789', '2026-09-30', '456', '최지우', '대한민국', '2025-04-10 16:45:00'),
                                                                                                                                                      (5, 5, '우리카드', '5678-9012-3456-7890', '2028-08-31', '567', '정유진', '대한민국', '2025-05-12 18:20:00');
 
--- ✅ 결제 내역 데이터: payment_id 제거하고 payment_key 추가
+--  결제 내역 데이터: payment_id 제거하고 payment_key 추가
 INSERT INTO `pay` (`id`, `reservation_id`, `user_id`, `payment_gateway`, `payment_key`, `redate`, `price`) VALUES
                                                                                                                (1, 1, 1, '토스페이먼츠', 'test_pk_1_placeholder', '2025-10-01 14:00:00', 680000.00),
                                                                                                                (2, 2, 2, '토스페이먼츠', 'test_pk_2_placeholder', '2025-11-01 16:30:00', 1180000.00),

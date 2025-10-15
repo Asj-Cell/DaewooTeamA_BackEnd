@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 
-// ✅ 토스페이먼츠 API 연동을 전담하는 서비스 (신규 생성)
+//  토스페이먼츠 API 연동을 전담하는 서비스 (신규 생성)
 @Service
 public class TossPaymentsService {
 

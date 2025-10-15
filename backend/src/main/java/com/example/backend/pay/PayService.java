@@ -26,7 +26,7 @@ public class PayService {
     private final PayRepository payRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
-    private final TossPaymentsService tossPaymentsService; // ✅ 토스 서비스 주입
+    private final TossPaymentsService tossPaymentsService; //  토스 서비스 주입
 
     @Transactional
     public Long processPaymentAndCreateReservation(FinalPaymentRequestDto requestDto, Long userId) throws Exception {
@@ -49,14 +49,14 @@ public class PayService {
             throw new IllegalStateException("요청된 결제 금액이 서버에서 계산된 금액과 일치하지 않습니다.");
         }
 
-        // ✅ 토스페이먼츠 결제 승인 요청을 먼저 수행
+        //  토스페이먼츠 결제 승인 요청을 먼저 수행
         JSONObject tossPaymentResult = tossPaymentsService.confirmPayment(
                 requestDto.getPaymentKey(),
                 requestDto.getOrderId(),
                 requestDto.getAmount()
         );
 
-        // ✅ 결제 승인 성공 시에만 예약 및 결제 내역 저장
+        //  결제 승인 성공 시에만 예약 및 결제 내역 저장
         Reservation reservation = new Reservation();
         reservation.setUser(user);
         reservation.setRoom(room);
@@ -71,14 +71,14 @@ public class PayService {
         pay.setPrice(calculatedTotalPrice);
         pay.setRedate(LocalDateTime.now());
         pay.setPaymentGateway("토스페이먼츠");
-        // ✅ 응답받은 paymentKey를 DB에 저장
+        //  응답받은 paymentKey를 DB에 저장
         pay.setPaymentKey((String) tossPaymentResult.get("paymentKey"));
         payRepository.save(pay);
 
         return savedReservation.getId();
     }
 
-    // ✅ 결제 및 예약 취소 서비스 메소드 추가
+    //  결제 및 예약 취소 서비스 메소드 추가
     @Transactional
     public void cancelPaymentAndReservation(Long reservationId, String cancelReason, Long userId) throws Exception {
         Reservation reservation = reservationRepository.findById(reservationId)
