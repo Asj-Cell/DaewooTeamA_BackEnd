@@ -24,8 +24,8 @@ async function confirmPayment() {
         // 실제 서비스에서는 이 값들을 이전 페이지에서 넘겨받아야 합니다.
         // 테스트를 위해 임시 값을 넣습니다.
         roomId: 1,
-        checkInDate: "2025-07-01",
-        checkOutDate: "2025-07-03"
+        checkInDate: "2025-07-04",
+        checkOutDate: "2025-07-06"
     };
 
     try {

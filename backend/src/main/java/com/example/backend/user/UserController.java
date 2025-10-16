@@ -70,9 +70,9 @@ public class UserController {
 
     @Operation(summary = "내 예약 내역 조회", description = "로그인한 사용자의 예약 내역을 조회합니다.")
     @GetMapping("/me/reservations")
-    public ApiResponse<List<ReservationDetailDto>> getUserReservations(@AuthenticationPrincipal UserDetails userDetails) {
+    public ApiResponse<List<ReservationTicketDto>> getUserReservations(@AuthenticationPrincipal UserDetails userDetails) { // 1. 반환 타입 변경
         Long userId = Long.parseLong(userDetails.getUsername());
-        List<ReservationDetailDto> result = userService.getUserReservations(userId);
+        List<ReservationTicketDto> result = userService.getUserReservations(userId); // 2. 받는 타입 변경
         return ApiResponse.success(result);
     }
 

@@ -8,8 +8,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
+
 public class ReservationTicketDto {
 
+    private final Long reservationId; // 예약을 식별하고 취소할 때 필요한 ID
     // 사용자 정보
     private final String userName;
     private final String userProfileImageUrl;
@@ -32,6 +34,7 @@ public class ReservationTicketDto {
 
     @Builder
     public ReservationTicketDto(Reservation reservation) {
+        this.reservationId = reservation.getId();
         this.userName = reservation.getUser().getUserName();
         this.userProfileImageUrl = reservation.getUser().getImageUrl();
         this.hotelName = reservation.getRoom().getHotel().getName();
