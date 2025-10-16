@@ -69,7 +69,8 @@ public class PayController {
             @RequestBody CancelRequestDto requestDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            Long userId = Long.parseLong(userDetails.getUsername());
+//            Long userId = Long.parseLong(userDetails.getUsername());
+            Long userId = 6L;
             payService.cancelPaymentAndReservation(reservationId, requestDto.getCancelReason(), userId);
             return ResponseEntity.ok("예약 및 결제가 성공적으로 취소되었습니다.");
         } catch (Exception e) {
