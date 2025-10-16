@@ -103,4 +103,14 @@ public class UserController {
         userService.cancelUserReservation(userId, reservationId);
         return ResponseEntity.ok(ApiResponse.success("예약이 성공적으로 취소되었습니다."));
     }
+
+    @Operation(summary = "내 예약 티켓 조회", description = "로그인한 사용자의 특정 예약에 대한 티켓 정보를 조회합니다.")
+    @GetMapping("/me/reservations/{reservationId}/ticket")
+    public ResponseEntity<ApiResponse<ReservationTicketDto>> getReservationTicket(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long reservationId) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        ReservationTicketDto ticketDto = userService.getReservationTicket(userId, reservationId);
+        return ResponseEntity.ok(ApiResponse.success(ticketDto));
+    }
 }
