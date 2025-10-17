@@ -1,6 +1,6 @@
 package com.example.backend.hotel.hotelfilters.detail;
 
-import com.example.backend.hotel.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import com.example.backend.room.dto.RoomDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class HotelDetailDto extends HotelDto {
+public class HotelDetailFiltersDto extends HotelFiltersDto {
 
     // 호텔의 상세 편의시설 (문자열 목록으로 내려주기)
     private List<String> amenities;
@@ -28,20 +28,20 @@ public class HotelDetailDto extends HotelDto {
 
 
     // 생성자
-    public HotelDetailDto(Long id,
-                          String name,
-                          String address,
-                          Integer grade,
-                          int amenitiesCount,
-                          BigDecimal price,
-                          double rating,
-                          List<String> imageUrls,
-                          boolean isFavorite,
-                          Long reviewCount,
-                          List<String> amenities,
-                          List<RoomDto> rooms,
-                          String overview,
-                          List<String> roomImageUrls) {
+    public HotelDetailFiltersDto(Long id,
+                                 String name,
+                                 String address,
+                                 Integer grade,
+                                 int amenitiesCount,
+                                 BigDecimal price,
+                                 double rating,
+                                 List<String> imageUrls,
+                                 boolean isFavorite,
+                                 Long reviewCount,
+                                 List<String> amenities,
+                                 List<RoomDto> rooms,
+                                 String overview,
+                                 List<String> roomImageUrls) {
         super(id, name, address, grade, amenitiesCount, price, rating, imageUrls, isFavorite, reviewCount);
         this.amenities = amenities;
         this.rooms = rooms;

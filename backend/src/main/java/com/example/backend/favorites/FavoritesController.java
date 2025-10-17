@@ -1,6 +1,6 @@
 package com.example.backend.favorites;
 
-import com.example.backend.hotel.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +22,9 @@ public class FavoritesController {
     private final FavoritesService favoritesService;
 
     @GetMapping("/api/favorites")
-    public ResponseEntity<List<HotelDto>> getFavoriteHotels(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<HotelFiltersDto>> getFavoriteHotels(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = Long.parseLong(userDetails.getUsername());
-        List<HotelDto> favoriteHotels = favoritesService.getFavoriteHotels(userId);
+        List<HotelFiltersDto> favoriteHotels = favoritesService.getFavoriteHotels(userId);
         return ResponseEntity.ok(favoriteHotels);
     }
     @PostMapping("/api/favorites/{hotelId}")

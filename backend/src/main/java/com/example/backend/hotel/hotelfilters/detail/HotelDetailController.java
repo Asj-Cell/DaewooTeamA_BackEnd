@@ -17,14 +17,14 @@ public class HotelDetailController {
     private final HotelDetailService hotelDetailService;
 
     @GetMapping("/{hotelId}")
-    public ResponseEntity<HotelDetailDto> getHotelDetail(
+    public ResponseEntity<HotelDetailFiltersDto> getHotelDetail(
             @PathVariable Long hotelId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOutDate,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         Long loginUserId = (userDetails != null) ? Long.parseLong(userDetails.getUsername()) : null;
-        HotelDetailDto detailDto = hotelDetailService.getHotelDetail(hotelId, loginUserId, checkInDate, checkOutDate);
+        HotelDetailFiltersDto detailDto = hotelDetailService.getHotelDetail(hotelId, loginUserId, checkInDate, checkOutDate);
         return ResponseEntity.ok(detailDto);
     }
 }

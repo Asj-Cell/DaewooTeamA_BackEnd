@@ -28,7 +28,7 @@ public class HotelDetailService {
     private final ReviewRepository reviewRepository;
     private final FavoritesRepository favoritesRepository;
 
-    public HotelDetailDto getHotelDetail(Long hotelId, Long loginUserId, LocalDate checkInDate, LocalDate checkOutDate) {
+    public HotelDetailFiltersDto getHotelDetail(Long hotelId, Long loginUserId, LocalDate checkInDate, LocalDate checkOutDate) {
         Hotel hotel = hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new RuntimeException("Hotel not found with id: " + hotelId));
 
@@ -60,7 +60,7 @@ public class HotelDetailService {
                 .map(HotelImage::getImageUrl)
                 .toList();
 
-        return new HotelDetailDto(
+        return new HotelDetailFiltersDto(
                 hotel.getId(),
                 hotel.getName(),
                 hotel.getAddress(),
