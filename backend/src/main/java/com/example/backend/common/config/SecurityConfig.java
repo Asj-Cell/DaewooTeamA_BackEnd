@@ -18,8 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -34,6 +38,32 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 허용할 출처(Origin) 목록을 설정합니다.
+        configuration.setAllowedOrigins(Arrays.asList(
+                // 프론트엔드 개발 서버
+                "http://localhost:8080",
+                // 기타 로컬 주소
+                "http://localhost", "http://127.0.0.1",
+                // 배포 서버 주소
+                "http://49.247.160.225", "https://49.247.160.225",
+                "http://13.125.235.75", "https://13.125.235.75"
+        ));
+        // 허용할 HTTP 메서드를 설정합니다.
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // 허용할 헤더를 설정합니다.
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // 자격 증명(쿠키, 인증 헤더 등)을 허용합니다.
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 위 설정 적용
+        return source;
     }
 
     @Bean
@@ -79,6 +109,15 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler((request, response, exception) -> {
+                            exception.printStackTrace();
+                            // 로그인 실패 시 에러 응답
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            ApiResponse<String> errorResponse = ApiResponse.fail("소셜 로그인에 실패했습니다: " + exception.getMessage());
+                            objectMapper.writeValue(response.getWriter(), errorResponse);
+                        })
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )
