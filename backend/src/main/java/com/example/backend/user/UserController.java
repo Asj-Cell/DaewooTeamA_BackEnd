@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User API", description = "✅ 인증 필요 | 사용자 정보 관련 API")
+@Tag(name = "User API", description = " 인증 필요 | 사용자 정보 관련 API")
 public class UserController {
 
     private final UserService userService;
@@ -70,9 +70,9 @@ public class UserController {
 
     @Operation(summary = "내 예약 내역 조회", description = "로그인한 사용자의 예약 내역을 조회합니다.")
     @GetMapping("/me/reservations")
-    public ApiResponse<List<ReservationDetailDto>> getUserReservations(@AuthenticationPrincipal UserDetails userDetails) {
+    public ApiResponse<List<ReservationTicketDto>> getUserReservations(@AuthenticationPrincipal UserDetails userDetails) { // 1. 반환 타입 변경
         Long userId = Long.parseLong(userDetails.getUsername());
-        List<ReservationDetailDto> result = userService.getUserReservations(userId);
+        List<ReservationTicketDto> result = userService.getUserReservations(userId); // 2. 받는 타입 변경
         return ApiResponse.success(result);
     }
 
@@ -102,5 +102,15 @@ public class UserController {
         Long userId = Long.parseLong(userDetails.getUsername());
         userService.cancelUserReservation(userId, reservationId);
         return ResponseEntity.ok(ApiResponse.success("예약이 성공적으로 취소되었습니다."));
+    }
+
+    @Operation(summary = "내 예약 티켓 조회", description = "로그인한 사용자의 특정 예약에 대한 티켓 정보를 조회합니다.")
+    @GetMapping("/me/reservations/{reservationId}/ticket")
+    public ResponseEntity<ApiResponse<ReservationTicketDto>> getReservationTicket(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long reservationId) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        ReservationTicketDto ticketDto = userService.getReservationTicket(userId, reservationId);
+        return ResponseEntity.ok(ApiResponse.success(ticketDto));
     }
 }

@@ -19,8 +19,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -39,11 +43,41 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 허용할 출처(Origin) 목록을 설정합니다.
+        configuration.setAllowedOrigins(Arrays.asList(
+                // 프론트엔드 개발 서버
+                "http://localhost:8080",
+                // 기타 로컬 주소
+                "http://localhost", "http://127.0.0.1",
+                // 배포 서버 주소
+                "http://49.247.160.225", "https://49.247.160.225",
+                "http://13.125.235.75", "https://13.125.235.75"
+        ));
+        // 허용할 HTTP 메서드를 설정합니다.
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // 허용할 헤더를 설정합니다.
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // 자격 증명(쿠키, 인증 헤더 등)을 허용합니다.
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 위 설정 적용
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // 1. CORS 설정 활성화
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
+                //로그인 관련 jwt로만 로그인 두줄
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // 2. Preflight OPTIONS 요청은 인증 없이 허용
@@ -61,7 +95,17 @@ public class SecurityConfig {
                                 "/api/hotels/filter",
                                 "/api/hotels/detail/**",
                                 "/uploads/**", // 업로드된 이미지 경로 허용
-                                "/images/**"
+                                "/images/**",
+                                //임시 결제 화면
+                                "/success.html",
+                                "/fail.html",
+                                "/check.html",
+                                "/api/pay",          // 일반 결제 승인 API
+                                "/api/pay/brandpay", // 브랜드페이 승인 API
+                                "/api/pay/*/cancel",
+                                "/*.js",
+                                "/*.css"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

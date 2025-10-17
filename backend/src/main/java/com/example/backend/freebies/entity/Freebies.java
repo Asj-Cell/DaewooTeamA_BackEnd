@@ -1,5 +1,6 @@
-package com.example.backend.hotel.entity;
+package com.example.backend.freebies.entity;
 
+import com.example.backend.hotel.entity.Hotel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ public class Freebies {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Breakfast_included")
+    @Column(name = "breakfast_included")
     private boolean breakfastIncluded;
 
     @Column(name = "free_parking")
@@ -25,7 +26,7 @@ public class Freebies {
     @Column(name = "free_wifi")
     private boolean freeWifi;
 
-    @Column(name = "Airport_shuttlebus")
+    @Column(name = "airport_shuttlebus")
     private boolean airportShuttlebus;
 
     @Column(name = "free_cancellation")

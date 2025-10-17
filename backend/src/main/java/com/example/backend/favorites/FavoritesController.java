@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Tag(name = "Favorites API", description = "✅ 인증 필요 | 찜 목록 관련 API")
+@Tag(name = "Favorites API", description = " 인증 필요 | 찜 목록 관련 API")
 @RequiredArgsConstructor
 public class FavoritesController {
 
