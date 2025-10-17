@@ -11,13 +11,22 @@ spring:
     url: jdbc:mariadb://localhost:13306/booking_db
     username: ${MARIADB_USER}
     password: ${MARIADB_PASSWORD}
-  mail:
-    username: "${SPRING_MAIL_USERNAME}"
-    password: "${SPRING_MAIL_PASSWORD}"
-# 👇 JWT 설정을 local 프로필에 추가합니다.
-jwt:
-  secret:
-    key: a2F카오디오a2FkaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaW9kaQ==
+
+  # --- 로컬 JPA 설정 ---
+  jpa:
+    hibernate:
+      ddl-auto: update  # 개발시 자동 스키마 업데이트
+    properties:
+      hibernate:
+        show_sql: true  # 로컬에서는 콘솔에도 출력
+
+  # --- OAuth2 로컬 설정 ---
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: "http://localhost:18888/login/oauth2/code/naver"
 
 # --- OAuth2 로컬 리다이렉트 URI ---
 app:
@@ -33,6 +42,14 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.springframework.security: DEBUG
 
+# --- Swagger UI 활성화 (로컬 개발용) ---
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
 toss:
   payments:
     #  백엔드 전용: 결제 승인/취소 시 서버에서만 사용하는 비밀 키

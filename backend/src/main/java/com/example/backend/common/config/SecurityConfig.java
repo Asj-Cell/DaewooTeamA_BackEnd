@@ -1,6 +1,7 @@
 package com.example.backend.common.config;
 
 import com.example.backend.auth.oauth.CustomOAuth2UserService;
+import com.example.backend.auth.oauth.OAuth2LoginFailureHandler;
 import com.example.backend.auth.oauth.OAuth2LoginSuccessHandler;
 import com.example.backend.common.util.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +34,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final ObjectMapper objectMapper; // ObjectMapper 주입
 
     @Bean
@@ -109,15 +111,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
-                        .failureHandler((request, response, exception) -> {
-                            exception.printStackTrace();
-                            // 로그인 실패 시 에러 응답
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-                            ApiResponse<String> errorResponse = ApiResponse.fail("소셜 로그인에 실패했습니다: " + exception.getMessage());
-                            objectMapper.writeValue(response.getWriter(), errorResponse);
-                        })
+                        .failureHandler(oAuth2LoginFailureHandler)  // ← 추가!
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )
