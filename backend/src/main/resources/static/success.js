@@ -24,8 +24,8 @@ async function confirmPayment() {
 
         // 이것또한 하드코딩되어있는 3개의 정보입니다 실제 서비스에서는 이 값들을 이전 페이지에서 넘겨받아야 합니다.
         roomId: 1,
-        checkInDate: "2025-07-04",
-        checkOutDate: "2025-07-06"
+        checkInDate: "2025-07-07",
+        checkOutDate: "2025-07-09"
     };
 
     try {

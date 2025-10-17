@@ -16,7 +16,7 @@ public class Freebies {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Breakfast_included")
+    @Column(name = "breakfast_included")
     private boolean breakfastIncluded;
 
     @Column(name = "free_parking")
@@ -25,7 +25,7 @@ public class Freebies {
     @Column(name = "free_wifi")
     private boolean freeWifi;
 
-    @Column(name = "Airport_shuttlebus")
+    @Column(name = "airport_shuttlebus")
     private boolean airportShuttlebus;
 
     @Column(name = "free_cancellation")
