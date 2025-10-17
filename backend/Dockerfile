@@ -1,6 +1,7 @@
+# Base image with JDK 21
 FROM openjdk:21-jdk-slim
 
-# Set timezone
+# Set timezone to Asia/Seoul
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -10,16 +11,16 @@ WORKDIR /app
 # Create logs directory
 RUN mkdir -p /app/logs
 
-# Copy JAR file
+# Copy the built JAR file
 COPY build/libs/backend.jar backend.jar
 
-# Set default profile
+# Set default Spring profile (can be overridden by docker-compose)
 ENV SPRING_PROFILES_ACTIVE=prod
 
 # Expose port
 EXPOSE 8888
 
-# Run application
+# Run the application
 ENTRYPOINT ["java", \
   "-XX:+UseContainerSupport", \
   "-XX:MaxRAMPercentage=75.0", \

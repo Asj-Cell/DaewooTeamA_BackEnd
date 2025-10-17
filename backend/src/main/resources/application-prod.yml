@@ -2,50 +2,25 @@ spring:
   config:
     activate:
       on-profile: prod
-
-  # --- 운영 DB 설정 ---
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://mariadb:3306/${MARIADB_DATABASE}
-    username: ${MARIADB_USER}
-    password: ${MARIADB_PASSWORD}
-    hikari:
-      maximum-pool-size: 10
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
-
-  # --- 운영 JPA 설정 (Dialect 명시 추가!) ---
+    url: jdbc:mariadb://mariadb:3306/booking_db
+    username: book_user
+    password: book_1234
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MariaDBDialect  # 명시적 지정!
-        show_sql: false
-        format_sql: true
-    database-platform: org.hibernate.dialect.MariaDBDialect  # 추가!
 
-# --- OAuth2 운영 리다이렉트 URI ---
-app:
-  oauth2:
-    authorized-redirect-uri: http://49.247.160.225/homepage
-
+#JPA log
 logging:
   level:
-    root: INFO
-    com.example.backend: INFO
-    org.hibernate.SQL: DEBUG  # 디버깅을 위해 DEBUG로 변경
-    org.hibernate.orm.jdbc.bind: DEBUG
-    org.springframework.security: INFO
-  file:
-    name: /app/logs/application.log
-    max-size: 10MB
-    max-history: 30
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm:
+          jdbc:
+            bind: TRACE
 
-# --- Swagger UI 비활성화 ---
 springdoc:
   swagger-ui:
-    enabled: false
-  api-docs:
-    enabled: false
+    disable-swagger-default-url: true

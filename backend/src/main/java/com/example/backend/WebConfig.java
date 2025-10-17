@@ -12,17 +12,16 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        // 로컬 개발용 주소
-                        "http://localhost",
-                        "http://localhost:80",
-                        "http://localhost:8080",  // 프론트엔드 개발 서버
-                        "http://127.0.0.1",
-                        "http://127.0.0.1:80",
-                        "http://127.0.0.1:8080",
+                        // 기존 로컬 개발용 주소
 
+                        "http://localhost", "http://localhost:80",
+                        "http://127.0.0.1", "http://127.0.0.1:80",
+
+                        "http://localhost:8080",
                         // 배포 서버용 주소
                         "http://49.247.160.225",
                         "https://49.247.160.225",
+
                         "http://13.125.235.75",
                         "https://13.125.235.75"
 
@@ -35,10 +34,9 @@ public class WebConfig implements WebMvcConfigurer {
 //                        "http://106.249.5.202",
 //                        "http://106.249.5.210"
                 )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);  // preflight 요청 캐싱 (1시간)
+                .allowCredentials(true);
     }
 
 
