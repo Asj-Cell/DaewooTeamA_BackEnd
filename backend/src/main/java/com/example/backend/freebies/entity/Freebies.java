@@ -1,5 +1,6 @@
-package com.example.backend.hotel.entity;
+package com.example.backend.freebies.entity;
 
+import com.example.backend.hotel.entity.Hotel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
