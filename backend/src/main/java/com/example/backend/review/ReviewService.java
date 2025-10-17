@@ -1,4 +1,4 @@
-// backend/src/main/java/com/example/backend/review/ReviewService.java
+
 package com.example.backend.review;
 
 import com.example.backend.hotel.HotelRepository;
