@@ -13,8 +13,7 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class HotelDto {
-    private Long id;
+public class HotelRequestDto {
     private String name;
     private Integer grade;
     private String overview;
@@ -24,7 +23,7 @@ public class HotelDto {
     private LocalTime checkinTime;
     private LocalTime checkoutTime;
 
-    private String cityName;
+    private Long cityId;
 
     private AmenitiesDto amenities;
     private FreebiesDto freebies;
