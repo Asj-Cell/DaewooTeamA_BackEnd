@@ -129,15 +129,16 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationDetailDto> getUserReservations(Long userId) {
+    public List<ReservationTicketDto> getUserReservations(Long userId) { // 1. 반환 타입 변경
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
-        List<ReservationDetailDto> reservationDetails = user.getReservations().stream()
-                .map(reservation -> new ReservationDetailDto(reservation)) // Reservation -> ReservationDetailDto 변환
+        // 2. Reservation을 ReservationTicketDto로 변환
+        return user.getReservations().stream()
+                .map(reservation -> ReservationTicketDto.builder()
+                        .reservation(reservation)
+                        .build())
                 .toList();
-
-        return reservationDetails; // Wrapper DTO로 감싸서 반환
     }
 
     @Transactional(readOnly = true)
@@ -163,5 +164,22 @@ public class UserService {
         payRepository.delete(pay);
 
         reservationRepository.delete(reservation);
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationTicketDto getReservationTicket(Long userId, Long reservationId) {
+        // 1. 예약 정보 조회
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약을 찾을 수 없습니다. ID: " + reservationId));
+
+        // 2. 예약자와 로그인한 사용자가 일치하는지 권한 확인
+        if (!reservation.getUser().getId().equals(userId)) {
+            throw new SecurityException("예약 티켓을 조회할 권한이 없습니다.");
+        }
+
+        // 3. DTO 빌더를 사용하여 티켓 정보 생성 및 반환
+        return ReservationTicketDto.builder()
+                .reservation(reservation)
+                .build();
     }
 }

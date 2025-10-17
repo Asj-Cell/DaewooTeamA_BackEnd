@@ -54,11 +54,9 @@ public class TossPaymentsService {
         String url = TOSS_API_URL + paymentKey + "/cancel";
         HttpEntity<String> request = new HttpEntity<>(params.toString(), headers);
 
-        try {
+
             return restTemplate.postForObject(url, request, JSONObject.class);
-        } catch (Exception e) {
-            throw new Exception("토스페이먼츠 결제 취소에 실패했습니다: " + e.getMessage());
-        }
+
     }
 
     /**

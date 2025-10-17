@@ -21,11 +21,11 @@ async function confirmPayment() {
         paymentKey: paymentKey,
         orderId: orderId,
         amount: amount,
-        // 실제 서비스에서는 이 값들을 이전 페이지에서 넘겨받아야 합니다.
-        // 테스트를 위해 임시 값을 넣습니다.
+
+        // 이것또한 하드코딩되어있는 3개의 정보입니다 실제 서비스에서는 이 값들을 이전 페이지에서 넘겨받아야 합니다.
         roomId: 1,
-        checkInDate: "2025-07-01",
-        checkOutDate: "2025-07-03"
+        checkInDate: "2025-07-07",
+        checkOutDate: "2025-07-09"
     };
 
     try {
@@ -34,7 +34,7 @@ async function confirmPayment() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                // JWT 인증이 필요하다면 여기에 Authorization 헤더를 추가해야 합니다.
+                // JWT 인증이 필요하다면 여기에 Authorization 헤더를 추가해야 합니다. (사실 잘 모릅니당)
                 // "Authorization": "Bearer <YOUR_JWT_TOKEN>"
             },
             body: JSON.stringify(requestData),

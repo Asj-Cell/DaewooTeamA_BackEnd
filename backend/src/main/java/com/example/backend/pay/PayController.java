@@ -1,28 +1,14 @@
 package com.example.backend.pay;
 
 import com.example.backend.pay.dto.FinalPaymentRequestDto;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pay")
@@ -41,6 +27,7 @@ public class PayController {
         try {
 //            Long userId = Long.parseLong(userDetails.getUsername());
             //  PayService의 메소드가 Exception을 던질 수 있으므로 try-catch로 감싸줍니다.
+            //@@@@@@ 밑은 곧 다시 전환해야하는 하드코딩된 코드입니다.
             Long userId = 6L;
             Long reservationId = payService.processPaymentAndCreateReservation(requestDto, userId);
             //  성공 시 예약 ID와 200 OK 상태를 반환합니다.
@@ -70,6 +57,7 @@ public class PayController {
             @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Long userId = Long.parseLong(userDetails.getUsername());
+//            Long userId = 6L;
             payService.cancelPaymentAndReservation(reservationId, requestDto.getCancelReason(), userId);
             return ResponseEntity.ok("예약 및 결제가 성공적으로 취소되었습니다.");
         } catch (Exception e) {
