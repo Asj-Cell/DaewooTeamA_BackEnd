@@ -26,6 +26,14 @@ spring:
         format_sql: true
     database-platform: org.hibernate.dialect.MariaDBDialect  # 추가!
 
+  # --- OAuth2 운영 설정 ---
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: "http://49.247.160.225:18888/login/oauth2/code/naver"
+
 # --- OAuth2 운영 리다이렉트 URI ---
 app:
   oauth2:

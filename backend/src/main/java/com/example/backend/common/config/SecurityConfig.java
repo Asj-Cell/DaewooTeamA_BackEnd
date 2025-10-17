@@ -1,6 +1,7 @@
 package com.example.backend.common.config;
 
 import com.example.backend.auth.oauth.CustomOAuth2UserService;
+import com.example.backend.auth.oauth.OAuth2LoginFailureHandler;
 import com.example.backend.auth.oauth.OAuth2LoginSuccessHandler;
 import com.example.backend.common.util.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final ObjectMapper objectMapper; // ObjectMapper 주입
 
     @Bean
@@ -65,6 +67,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler(oAuth2LoginFailureHandler)  // ← 추가!
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )

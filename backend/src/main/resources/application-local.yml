@@ -20,6 +20,14 @@ spring:
       hibernate:
         show_sql: true  # 로컬에서는 콘솔에도 출력
 
+  # --- OAuth2 로컬 설정 ---
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            redirect-uri: "http://localhost:18888/login/oauth2/code/naver"
+
 # --- OAuth2 로컬 리다이렉트 URI ---
 app:
   oauth2:
