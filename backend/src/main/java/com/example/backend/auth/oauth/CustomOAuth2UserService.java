@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -66,6 +67,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         imageUrl = extractNaverImage(attributes);
                         providerId = extractNaverProviderId(attributes);
                         log.info("Naver 사용자 정보 추출 완료 - email: {}, name: {}", email, name);
+                        break;
+
+                    case "kakao":
+                        email = extractKakaoEmail(attributes);
+                        name = extractKakaoName(attributes);
+                        imageUrl = extractKakaoImage(attributes);
+                        providerId = extractKakaoProviderId(attributes);
+                        log.info("Kakao 사용자 정보 추출 완료 - email: {}, name: {}", email, name);
                         break;
 
                     default:
@@ -179,6 +188,86 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         return (Map<String, Object>) responseObj;
+    }
+
+    // Kakao 정보 추출 메서드들
+    private String extractKakaoEmail(Map<String, Object> attributes) {
+        Map<String, Object> kakaoAccount = getKakaoAccount(attributes);
+        String email = (String) kakaoAccount.get("email");
+
+        // 이메일이 없으면 카카오 ID를 이메일 형식으로 사용
+        if (email == null || email.trim().isEmpty()) {
+            String providerId = extractKakaoProviderId(attributes);
+            email = "kakao_" + providerId + "@kakao.user";
+            log.warn("Kakao 이메일 정보가 없어서 임시 이메일 생성: {}", email);
+        }
+        return email;
+    }
+
+    private String extractKakaoName(Map<String, Object> attributes) {
+        Map<String, Object> kakaoAccount = getKakaoAccount(attributes);
+        Map<String, Object> profile = getKakaoProfile(kakaoAccount);
+        String nickname = (String) profile.get("nickname");
+        return (nickname != null && !nickname.trim().isEmpty()) ? nickname : "Kakao User";
+    }
+
+    private String extractKakaoImage(Map<String, Object> attributes) {
+        try {
+            Map<String, Object> kakaoAccount = getKakaoAccount(attributes);
+            Map<String, Object> profile = getKakaoProfile(kakaoAccount);
+            return (String) profile.get("profile_image_url");
+        } catch (Exception e) {
+            log.warn("Kakao 프로필 이미지를 가져오지 못했습니다.", e);
+            return null;
+        }
+    }
+
+    private String extractKakaoProviderId(Map<String, Object> attributes) {
+        Object id = attributes.get("id");
+        if (id == null) {
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error("missing_provider_id", "Kakao ID 정보를 찾을 수 없습니다.", null)
+            );
+        }
+        return String.valueOf(id);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getKakaoAccount(Map<String, Object> attributes) {
+        Object accountObj = attributes.get("kakao_account");
+        if (accountObj == null) {
+            log.error("Kakao account 객체가 null입니다. Attributes: {}", attributes);
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error("invalid_response",
+                            "Kakao 응답 형식이 올바르지 않습니다.", null)
+            );
+        }
+
+        if (!(accountObj instanceof Map)) {
+            log.error("Kakao account가 Map 타입이 아닙니다. Type: {}", accountObj.getClass());
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error("invalid_response",
+                            "Kakao 응답 형식이 올바르지 않습니다.", null)
+            );
+        }
+
+        return (Map<String, Object>) accountObj;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getKakaoProfile(Map<String, Object> kakaoAccount) {
+        Object profileObj = kakaoAccount.get("profile");
+        if (profileObj == null) {
+            log.warn("Kakao profile 객체가 null입니다.");
+            return Map.of(); // 빈 맵 반환
+        }
+
+        if (!(profileObj instanceof Map)) {
+            log.warn("Kakao profile이 Map 타입이 아닙니다. Type: {}", profileObj.getClass());
+            return Map.of(); // 빈 맵 반환
+        }
+
+        return (Map<String, Object>) profileObj;
     }
 
     // 필수 정보 검증
