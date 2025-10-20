@@ -35,12 +35,14 @@ public class HotelService {
             Amenities amenities = new Amenities();
             updateAmenitiesEntity(amenities, request.getAmenities());
             hotel.setAmenities(amenities); // 연관관계 설정
+            amenities.setHotel(hotel);
         }
 
         if (request.getFreebies() != null) {
             Freebies freebies = new Freebies();
             updateFreebiesEntity(freebies, request.getFreebies());
             hotel.setFreebies(freebies); // 연관관계 설정
+            freebies.setHotel(hotel);
         }
 
         Hotel savedHotel = hotelRepository.save(hotel);
@@ -64,12 +66,14 @@ public class HotelService {
             Amenities amenities = (hotel.getAmenities() == null) ? new Amenities() : hotel.getAmenities();
             updateAmenitiesEntity(amenities, request.getAmenities());
             hotel.setAmenities(amenities);
+            amenities.setHotel(hotel);
         }
 
         if (request.getFreebies() != null) {
             Freebies freebies = (hotel.getFreebies() == null) ? new Freebies() : hotel.getFreebies();
             updateFreebiesEntity(freebies, request.getFreebies());
             hotel.setFreebies(freebies);
+            freebies.setHotel(hotel);
         }
 
         // @Transactional 어노테이션으로 인해 메소드 종료 시 자동으로 dirty checking 되어 update 쿼리 실행
@@ -139,5 +143,14 @@ public class HotelService {
         freebies.setFreeWifi(dto.isFreeWifi());
         freebies.setAirportShuttlebus(dto.isAirportShuttlebus());
         freebies.setFreeCancellation(dto.isFreeCancellation());
+    }
+
+    @Transactional(readOnly = true) // 조회이므로 readOnly = true
+    public HotelDto getHotelById(Long hotelId) {
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id: " + hotelId));
+
+        // 이전에 만들어둔 변환 헬퍼 메소드를 재사용합니다.
+        return convertToHotelDto(hotel);
     }
 }

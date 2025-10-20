@@ -14,6 +14,12 @@ public class HotelController {
 
     private final HotelService hotelService;
 
+    @GetMapping("/{hotelId}")
+    public ResponseEntity<HotelDto> getHotelById(@PathVariable Long hotelId) {
+        HotelDto hotelDto = hotelService.getHotelById(hotelId);
+        return ResponseEntity.ok(hotelDto);
+    }
+
     @PostMapping
     public ResponseEntity<HotelDto> createHotel(@RequestBody HotelRequestDto request) {
         HotelDto createdHotel = hotelService.createHotel(request);

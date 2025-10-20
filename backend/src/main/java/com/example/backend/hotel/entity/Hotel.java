@@ -59,9 +59,9 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HotelImage> images = new ArrayList<>();
 
-    @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Freebies freebies;
 
-    @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Amenities amenities;
 }
