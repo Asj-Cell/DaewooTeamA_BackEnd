@@ -1,20 +1,71 @@
 package com.example.backend.room;
 
+import com.example.backend.hotel.HotelRepository;
+import com.example.backend.hotel.entity.Hotel;
 import com.example.backend.room.dto.RoomDto;
 import com.example.backend.room.dto.RoomImgDto;
+import com.example.backend.room.dto.RoomRequestDto;
 import com.example.backend.room.entity.Room;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RoomService {
 
     private final RoomRepository roomRepository;
+    private final HotelRepository hotelRepository;
 
+
+    /**
+     * 특정 호텔에 새로운 객실을 생성합니다.
+     * @param hotelId 객실을 추가할 호텔의 ID
+     * @param request 생성할 객실 정보 DTO
+     * @return 생성된 객실 정보 DTO
+     */
+    public RoomDto createRoom(Long hotelId, RoomRequestDto request) {
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id: " + hotelId));
+
+        Room room = new Room();
+        updateRoomEntityFromRequest(room, request);
+        room.setHotel(hotel); // 부모 호텔과의 연관관계 설정
+
+        Room savedRoom = roomRepository.save(room);
+        return convertToDto(savedRoom);
+    }
+
+    /**
+     * 기존 객실의 정보를 수정합니다.
+     * @param roomId 수정할 객실의 ID
+     * @param request 수정할 내용이 담긴 DTO
+     * @return 수정된 객실 정보 DTO
+     */
+    public RoomDto updateRoom(Long roomId, RoomRequestDto request) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + roomId));
+
+        updateRoomEntityFromRequest(room, request);
+        // @Transactional에 의해 메소드 종료 시 자동 업데이트
+        return convertToDto(room);
+    }
+
+    /**
+     * 특정 객실을 삭제합니다.
+     * @param roomId 삭제할 객실의 ID
+     */
+    public void deleteRoom(Long roomId) {
+        if (!roomRepository.existsById(roomId)) {
+            throw new EntityNotFoundException("Room not found with id: " + roomId);
+        }
+        roomRepository.deleteById(roomId);
+    }
     // 특정 호텔의 모든 룸 조회
     public List<RoomDto> getRoomsByHotelId(Long hotelId) {
         return roomRepository.findByHotelId(hotelId)
@@ -51,5 +102,14 @@ public class RoomService {
         dto.setIsAvailable(null);
 
         return dto;
+    }
+
+    private void updateRoomEntityFromRequest(Room room, RoomRequestDto request) {
+        room.setRoomNumber(request.getRoomNumber());
+        room.setPrice(request.getPrice());
+        room.setName(request.getName());
+        room.setView(request.getView());
+        room.setBed(request.getBed());
+        room.setMaxGuests(request.getMaxGuests());
     }
 }
