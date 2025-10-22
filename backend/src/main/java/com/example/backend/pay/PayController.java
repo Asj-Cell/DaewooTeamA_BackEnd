@@ -25,10 +25,10 @@ public class PayController {
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
         //  try-catch 구문을 추가하여 서비스단에서 발생하는 예외를 처리합니다.
         try {
-            Long userId = Long.parseLong(userDetails.getUsername());
+//            Long userId = Long.parseLong(userDetails.getUsername());
             //  PayService의 메소드가 Exception을 던질 수 있으므로 try-catch로 감싸줍니다.
             //@@@@@@ 밑은 곧 다시 전환해야하는 하드코딩된 코드입니다.
-//            Long userId = 7L;
+            Long userId = 6L;
             Long reservationId = payService.processPaymentAndCreateReservation(requestDto, userId);
             //  성공 시 예약 ID와 200 OK 상태를 반환합니다.
             return ResponseEntity.ok(reservationId);
