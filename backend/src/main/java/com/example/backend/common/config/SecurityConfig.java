@@ -36,7 +36,7 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final ObjectMapper objectMapper; // ObjectMapper 주입
-
+//        http://localhost:8888/oauth2/authorization/kakao
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

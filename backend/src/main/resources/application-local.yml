@@ -26,12 +26,14 @@ spring:
       client:
         registration:
           naver:
-            redirect-uri: "http://localhost:18888/login/oauth2/code/naver"
+            redirect-uri: "http://localhost:8888/login/oauth2/code/naver"
+          kakao:
+            redirect-uri: "http://localhost:8888/login/oauth2/code/kakao"
 
 # --- OAuth2 로컬 리다이렉트 URI ---
 app:
   oauth2:
-    authorized-redirect-uri: http://localhost:80/homepage
+    authorized-redirect-uri: http://localhost:80/
 
 # --- 로컬 개발용 상세 로그 ---
 logging:
