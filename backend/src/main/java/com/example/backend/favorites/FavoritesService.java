@@ -1,6 +1,6 @@
 package com.example.backend.favorites;
 
-import com.example.backend.hotel.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import com.example.backend.favorites.entity.Favorites;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.entity.Hotel;
@@ -29,7 +29,7 @@ public class FavoritesService {
     private final HotelRepository hotelRepository;
 
 
-    public List<HotelDto> getFavoriteHotels(Long userId) {
+    public List<HotelFiltersDto> getFavoriteHotels(Long userId) {
         List<Favorites> favorites = favoritesRepository.findAllByUser_Id(userId);
 
         return favorites.stream()
@@ -44,7 +44,7 @@ public class FavoritesService {
                             .map(HotelImage::getImageUrl)
                             .toList();
 
-                    return new HotelDto(
+                    return new HotelFiltersDto(
                             h.getId(),
                             h.getName(),
                             h.getAddress(),

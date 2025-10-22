@@ -30,6 +30,8 @@ public class Reservation {
     @Column(name = "check_out_date", nullable = false)
     private LocalDate checkoutDate;
 
+    @Column(name = "service_fee", precision = 10, scale = 2)
+    private BigDecimal serviceFee;
 
     @Column(name = "discount", precision = 10, scale = 2)
     private BigDecimal discount;

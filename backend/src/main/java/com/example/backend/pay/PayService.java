@@ -34,6 +34,13 @@ public class PayService {
     private final PayService self; // 자기 자신을 주입받기 위한 필드
     private static final Logger log = LoggerFactory.getLogger(PayService.class);
 
+    // --- [S] 추가된 부분: 계산 상수 ---
+    // 세금 비율 (10%)
+    private static final BigDecimal TAX_RATE = new BigDecimal("0.10");
+    // 고정 서비스 수수료
+    private static final BigDecimal SERVICE_FEE = new BigDecimal("5000");
+    // --- [E] 추가된 부분 ---
+
     // 자기 자신을 주입받기 위한 생성자 수정
     public PayService(ReservationRepository reservationRepository, PayRepository payRepository, UserRepository userRepository, RoomRepository roomRepository, TossPaymentsService tossPaymentsService, @Lazy PayService self) {
         this.reservationRepository = reservationRepository;
@@ -60,30 +67,54 @@ public class PayService {
             throw new IllegalStateException("해당 날짜에 이미 예약된 방입니다.");
         }
 
+        // --- [S] 수정된 부분: 상세 금액 계산 및 검증 ---
         long nights = ChronoUnit.DAYS.between(requestDto.getCheckInDate(), requestDto.getCheckOutDate());
-        BigDecimal calculatedTotalPrice = room.getPrice().multiply(new BigDecimal(nights));
+
+        // 1. 소계 (방 가격 * 숙박일)
+        BigDecimal subtotal = room.getPrice().multiply(new BigDecimal(nights));
+
+        // 2. 세금 (소계의 10%)
+        BigDecimal taxes = subtotal.multiply(TAX_RATE);
+
+        // 3. 서비스 수수료 (고정값)
+        BigDecimal serviceFee = SERVICE_FEE;
+
+        // 4. 할인 (현재 0)
+        BigDecimal discount = BigDecimal.ZERO;
+
+        // 5. 최종 금액 (서버에서 계산한 총액)
+        BigDecimal calculatedTotalPrice = subtotal.add(taxes).add(serviceFee).subtract(discount);
+
+        // 프론트에서 보낸 최종 금액(amount)과 서버에서 계산한 최종 금액(calculatedTotalPrice)이 일치하는지 검증
         if (calculatedTotalPrice.longValue() != requestDto.getAmount()) {
+            log.warn("결제 금액 불일치: [Request: {}], [Server Calculated: {}]", requestDto.getAmount(), calculatedTotalPrice.longValue());
             throw new IllegalStateException("요청된 결제 금액이 서버에서 계산된 금액과 일치하지 않습니다.");
         }
+        // --- [E] 수정된 부분 ---
 
         JSONObject tossPaymentResult = tossPaymentsService.confirmPayment(
                 requestDto.getPaymentKey(),
                 requestDto.getOrderId(),
-                requestDto.getAmount()
+                requestDto.getAmount() // 검증이 완료된 calculatedTotalPrice (requestDto.getAmount()와 동일함)
         );
 
+        // --- [S] 수정된 부분: Reservation 엔티티에 상세 금액 저장 ---
         Reservation reservation = new Reservation();
         reservation.setUser(user);
         reservation.setRoom(room);
         reservation.setCheckinDate(requestDto.getCheckInDate());
         reservation.setCheckoutDate(requestDto.getCheckOutDate());
-        reservation.setTotalPrice(calculatedTotalPrice);
+        reservation.setTotalPrice(calculatedTotalPrice); // 최종 금액
+        reservation.setTaxes(taxes); // 세금
+        reservation.setServiceFee(serviceFee); // 서비스 수수료
+        reservation.setDiscount(discount); // 할인
         Reservation savedReservation = reservationRepository.save(reservation);
+        // --- [E] 수정된 부분 ---
 
         Pay pay = new Pay();
         pay.setUser(user);
         pay.setReservation(savedReservation);
-        pay.setPrice(calculatedTotalPrice);
+        pay.setPrice(calculatedTotalPrice); // Pay 테이블에도 최종 금액 저장
         pay.setRedate(LocalDateTime.now());
         pay.setPaymentGateway("토스페이먼츠");
         pay.setPaymentKey((String) tossPaymentResult.get("paymentKey"));
