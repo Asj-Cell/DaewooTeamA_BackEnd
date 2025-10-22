@@ -6,50 +6,118 @@ spring:
   # --- 운영 DB 설정 ---
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://mariadb:3306/${MARIADB_DATABASE}
+    url: jdbc:mariadb://mariadb:3306/${MARIADB_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
     username: ${MARIADB_USER}
     password: ${MARIADB_PASSWORD}
     hikari:
-      maximum-pool-size: 10
       connection-timeout: 30000
-      idle-timeout: 600000
+      maximum-pool-size: 20
+      minimum-idle: 10
       max-lifetime: 1800000
+      connection-test-query: SELECT 1
+      leak-detection-threshold: 60000
 
-  # --- 운영 JPA 설정 (Dialect 명시 추가!) ---
+  # --- 운영 JPA 설정 ---
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate  # 운영환경에서는 validate 권장
+    show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MariaDBDialect  # 명시적 지정!
-        show_sql: false
-        format_sql: true
-    database-platform: org.hibernate.dialect.MariaDBDialect  # 추가!
+        format_sql: false
+        generate_statistics: false
+        jdbc:
+          batch_size: 100
+          fetch_size: 200
+    database-platform: org.hibernate.dialect.MariaDBDialect
 
-  # --- OAuth2 운영 설정 ---
+  # --- 운영 OAuth2 설정 (명시적 redirect-uri 추가) ---
   security:
     oauth2:
       client:
         registration:
+          google:
+            redirect-uri: "http://49.247.160.225:18888/login/oauth2/code/google"
           naver:
             redirect-uri: "http://49.247.160.225:18888/login/oauth2/code/naver"
+          kakao:
+            redirect-uri: "http://49.247.160.225:18888/login/oauth2/code/kakao"
 
-# --- OAuth2 운영 리다이렉트 URI ---
+  # --- 파일 업로드 설정 ---
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+
+  # --- 이메일 설정 ---
+  mail:
+    host: smtp.naver.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.naver.com
+
+# --- 애플리케이션 설정 ---
 app:
+  url: http://49.247.160.225:18888
   oauth2:
-    authorized-redirect-uri: http://localhost/
+    authorized-redirect-uri: "http://49.247.160.225:80"
+  cors:
+    allowed-origins: "http://49.247.160.225,http://49.247.160.225:80"
+    allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
 
+# --- 로깅 설정 ---
 logging:
   level:
     root: INFO
     com.example.backend: INFO
-    org.hibernate.SQL: DEBUG  # 디버깅을 위해 DEBUG로 변경
-    org.hibernate.orm.jdbc.bind: DEBUG
-    org.springframework.security: INFO
+    org.hibernate.SQL: WARN
+    org.springframework.security: WARN
   file:
     name: /app/logs/application.log
-    max-size: 10MB
+    max-size: 50MB
     max-history: 30
+    total-size-cap: 1GB
+  logback:
+    rollingpolicy:
+      max-history: 30
+      max-file-size: 50MB
+      total-size-cap: 1GB
+
+# --- Toss Payments 설정 ---
+toss:
+  payments:
+    secret-key: "${TOSS_SECRET_KEY}"
+    confirm-url: "${app.url}/api/v1/payments/confirm"
+    fail-url: "${app.url}/payment/fail"
+    success-url: "${app.url}/payment/success"
+
+# --- Actuator 설정 ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /management
+  endpoint:
+    health:
+      show-details: when_authorized
+      show-components: when_authorized
+    metrics:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 # --- Swagger UI 비활성화 ---
 springdoc:
