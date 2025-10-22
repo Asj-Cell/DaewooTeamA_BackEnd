@@ -36,7 +36,7 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final ObjectMapper objectMapper; // ObjectMapper 주입
-//        http://localhost:8888/oauth2/authorization/kakao
+//        http://localhost:18888/oauth2/authorization/kakao
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -51,7 +51,9 @@ public class SecurityConfig {
                 // 프론트엔드 개발 서버
                 "http://localhost:8080",
                 // 기타 로컬 주소
-                "http://localhost", "http://127.0.0.1",
+                "http://localhost:18888",
+                "http://localhost",
+                "http://127.0.0.1",
                 // 배포 서버 주소
                 "http://49.247.160.225", "https://49.247.160.225",
                 "http://13.125.235.75", "https://13.125.235.75"
@@ -71,47 +73,57 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CORS 설정 활성화
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
-                //로그인 관련 jwt로만 로그인 두줄
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .formLogin(form -> form.disable())
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 2. Preflight OPTIONS 요청은 인증 없이 허용
+                        // 1. Preflight OPTIONS 요청 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/hotels/*/reviews/**").permitAll()
+
+                        // 2. 정적 리소스 허용
                         .requestMatchers(
-                                // 일반 인증 관련 public 엔드포인트
-                                "/api/auth/**", // /api/auth/logout도 포함되므로 명시적으로 분리할 필요 없음
-                                // 소셜 로그인 관련 public 엔드포인트
-                                "/login/oauth2/**",
-                                // Swagger 및 기타 public 엔드포인트
+                                "/favicon.ico",
+                                "/error",
+                                "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/*.js",
+                                "/*.css",
+                                "/images/**",
+                                "/uploads/**"
+                        ).permitAll()
+
+                        // 3. API 엔드포인트 허용
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/login/oauth2/**",
+                                "/oauth2/authorization/**",
                                 "/api/travel-packages/**",
                                 "/api/hotels/filter",
                                 "/api/hotels/detail/**",
-                                "/uploads/**", // 업로드된 이미지 경로 허용
-                                "/images/**",
-                                //임시 결제 화면
+                                "/api/hotels/*/reviews/**",
+                                "/api/pay",
+                                "/api/pay/brandpay",
+                                "/api/pay/*/cancel"
+                        ).permitAll()
+
+                        // 4. HTML 페이지 허용
+                        .requestMatchers(
                                 "/success.html",
                                 "/fail.html",
-                                "/check.html",
-                                "/api/pay",          // 일반 결제 승인 API
-                                "/api/pay/brandpay", // 브랜드페이 승인 API
-                                "/api/pay/*/cancel",
-                                "/*.js",
-                                "/*.css"
-
+                                "/check.html"
                         ).permitAll()
+
+                        // 5. 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
-                        .failureHandler(oAuth2LoginFailureHandler)  // ← 추가!
+                        .failureHandler(oAuth2LoginFailureHandler)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )
@@ -122,11 +134,7 @@ public class SecurityConfig {
                             response.setStatus(HttpServletResponse.SC_OK);
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-
-                            // ApiResponse 객체를 사용하여 성공 응답 생성
                             ApiResponse<String> successResponse = ApiResponse.success("성공적으로 로그아웃되었습니다.");
-
-                            // ObjectMapper를 사용하여 JSON 문자열로 변환 후 응답 본문에 작성
                             objectMapper.writeValue(response.getWriter(), successResponse);
                         })
                 )

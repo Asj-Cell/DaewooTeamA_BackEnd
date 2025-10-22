@@ -22,15 +22,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final JwtUtil jwtUtil;
 
-    // 기본값 설정 추가
-    @Value("${app.oauth2.authorized-redirect-uri:http://localhost:80/oauth2/redirect}")
+    @Value("${app.oauth2.authorized-redirect-uri}")
     private String authorizedRedirectUri;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
-                                        Authentication authentication)
-            throws IOException, ServletException {
+                                        Authentication authentication) throws IOException, ServletException {
 
         try {
             log.info("=== OAuth2 로그인 성공 처리 시작 ===");
