@@ -2,7 +2,7 @@ package com.example.backend.hotel.hotelfilters;
 
 import com.example.backend.favorites.FavoritesRepository;
 import com.example.backend.hotel.entity.Hotel;
-import com.example.backend.hotel.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import com.example.backend.hotel.hotelfilters.dto.HotelFilterRequestDto;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.entity.HotelImage;
@@ -31,13 +31,13 @@ public class HotelFiltersService {
     private final ReviewRepository reviewRepository;
     private final FavoritesRepository favoritesRepository;
 
-    public Page<HotelDto> filterHotels(HotelFilterRequestDto request, Pageable pageable, Long loginUserId) {
+    public Page<HotelFiltersDto> filterHotels(HotelFilterRequestDto request, Pageable pageable, Long loginUserId) {
         // 1. Specification으로 DB에서 필터 적용, 전체 조회
         Specification<Hotel> spec = HotelSpecifications.withFilters(request);
         List<Hotel> hotels = hotelRepository.findAll(spec);
 
         // 2. DTO 변환 + Stream 필터 + 정렬
-        List<HotelDto> sortedDtos = hotels.stream()
+        List<HotelFiltersDto> sortedDtos = hotels.stream()
                 .map(h -> {
                     // 리뷰 기반 평점 계산
                     Double totalRating = reviewRepository.findTotalRatingByHotelId(h.getId());
@@ -51,7 +51,7 @@ public class HotelFiltersService {
                             .map(HotelImage::getImageUrl)
                             .toList();
 
-                    return new HotelDto(
+                    return new HotelFiltersDto(
                             h.getId(),
                             h.getName(),
                             h.getAddress(),
@@ -71,21 +71,21 @@ public class HotelFiltersService {
         // 3. 정렬 후 메모리 페이징
         int start = (int) pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), sortedDtos.size());
-        List<HotelDto> pageContent = sortedDtos.subList(start, end);
+        List<HotelFiltersDto> pageContent = sortedDtos.subList(start, end);
 
         return new PageImpl<>(pageContent, pageable, sortedDtos.size());
     }
 
     // 정렬 기준 Comparator 반환
-    private Comparator<HotelDto> getComparator(String sortBy) {
+    private Comparator<HotelFiltersDto> getComparator(String sortBy) {
         if ("rating".equalsIgnoreCase(sortBy)) {
-            return Comparator.comparingDouble(HotelDto::getRating).reversed(); // 평점 내림차순
+            return Comparator.comparingDouble(HotelFiltersDto::getRating).reversed(); // 평점 내림차순
         } else if ("priceAsc".equalsIgnoreCase(sortBy)) {
-            return Comparator.comparing(HotelDto::getPrice); // 가격 오름차순
+            return Comparator.comparing(HotelFiltersDto::getPrice); // 가격 오름차순
         } else if ("priceDesc".equalsIgnoreCase(sortBy)) {
-            return Comparator.comparing(HotelDto::getPrice).reversed(); // 가격 내림차순
+            return Comparator.comparing(HotelFiltersDto::getPrice).reversed(); // 가격 내림차순
         } else {
-            return Comparator.comparingLong(HotelDto::getId); // 기본: ID 순
+            return Comparator.comparingLong(HotelFiltersDto::getId); // 기본: ID 순
         }
     }
 

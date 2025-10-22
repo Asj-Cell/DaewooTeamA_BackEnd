@@ -193,6 +193,7 @@ CREATE TABLE `reservation` (
                                `check_out_date` date NOT NULL,
                                `discount` decimal(10,2) DEFAULT NULL,
                                `taxes` decimal(10,2) DEFAULT NULL,
+                               `service_fee` decimal(10,2) DEFAULT NULL,
                                `total_price` decimal(10,2) NOT NULL,
                                `room_id` bigint(20) NOT NULL,
                                `user_id` bigint(20) NOT NULL,
@@ -405,12 +406,12 @@ INSERT INTO `review` (`id`, `user_id`, `hotel_id`, `content`, `user_rating_score
                                                                                        (7, 2, 7, '역사와 전통이 느껴지는 멋진 호텔이었습니다.', 4.7),
                                                                                        (8, 3, 8, '신주쿠의 야경이 한눈에 들어오는 전망이 최고였습니다.', 4.9);
 -- 예약 데이터
-INSERT INTO `reservation` (`id`, `user_id`, `room_id`, `check_in_date`, `check_out_date`, `discount`, `taxes`, `total_price`) VALUES
-                                                                                                                                  (1, 1, 2, '2025-10-10', '2025-10-12', 50000.00, 30000.00, 680000.00),
-                                                                                                                                  (2, 2, 3, '2025-11-15', '2025-11-18', 100000.00, 80000.00, 1180000.00),
-                                                                                                                                  (3, 3, 5, '2025-12-20', '2025-12-22', 30000.00, 19000.00, 429000.00),
-                                                                                                                                  (4, 4, 14, '2026-02-05', '2026-02-07', 70000.00, 83000.00, 1713000.00),
-                                                                                                                                  (5, 5, 16, '2026-03-12', '2026-03-14', 20000.00, 168000.00, 1848000.00);
+INSERT INTO `reservation` (`id`, `user_id`, `room_id`, `check_in_date`, `check_out_date`, `discount`, `taxes`, `service_fee`, `total_price`) VALUES
+                                                                                                                                                 (1, 1, 2, '2025-10-10', '2025-10-12', 50000.00, 30000.00, 5000.00, 680000.00),
+                                                                                                                                                 (2, 2, 3, '2025-11-15', '2025-11-18', 100000.00, 80000.00, 5000.00, 1180000.00),
+                                                                                                                                                 (3, 3, 5, '2025-12-20', '2025-12-22', 30000.00, 19000.00, 5000.00, 429000.00),
+                                                                                                                                                 (4, 4, 14, '2026-02-05', '2026-02-07', 70000.00, 83000.00, 5000.00, 1713000.00),
+                                                                                                                                                 (5, 5, 16, '2026-03-12', '2026-03-14', 20000.00, 168000.00, 5000.00, 1848000.00);
 
 -- 결제 수단 데이터
 INSERT INTO `payment` (`id`, `user_id`, `payment_name`, `payment_number`, `expiration_date`, `cvc`, `card_user`, `country`, `registration_date`) VALUES

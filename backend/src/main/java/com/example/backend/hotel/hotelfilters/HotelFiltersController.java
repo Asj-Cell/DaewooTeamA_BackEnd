@@ -1,6 +1,6 @@
 package com.example.backend.hotel.hotelfilters;
 
-import com.example.backend.hotel.hotelfilters.dto.HotelDto;
+import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import com.example.backend.hotel.hotelfilters.dto.HotelFilterRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -72,7 +72,7 @@ public class HotelFiltersController {
         if (checkInDate != null) request.setCheckInDate(LocalDate.parse(checkInDate));
         if (checkOutDate != null) request.setCheckOutDate(LocalDate.parse(checkOutDate));
 
-        Page<HotelDto> hotelPage = hotelFiltersService.filterHotels(request, pageable, loginUserId);
+        Page<HotelFiltersDto> hotelPage = hotelFiltersService.filterHotels(request, pageable, loginUserId);
 
         Map<String, Object> response = new HashMap<>();
         response.put("hotels", hotelPage.getContent());

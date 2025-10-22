@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class HotelDto {
+public class HotelFiltersDto {
     private Long id;
     private String name;
     private String address;
