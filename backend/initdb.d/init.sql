@@ -1,5 +1,6 @@
 -- 1. 테이블 초기화 (참조 관계의 역순으로 삭제)
 DROP TABLE IF EXISTS `pay`;
+DROP TABLE IF EXISTS `coupon`;
 DROP TABLE IF EXISTS `payment`;
 DROP TABLE IF EXISTS `review`;
 DROP TABLE IF EXISTS `favorites`;
@@ -203,6 +204,23 @@ CREATE TABLE `reservation` (
                                KEY `FK_reservation_to_user` (`user_id`),
                                CONSTRAINT `FK_reservation_to_room` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`),
                                CONSTRAINT `FK_reservation_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 쿠폰 테이블 (신규 추가)
+CREATE TABLE `coupon` (
+                          `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                          `name` varchar(255) NOT NULL,
+                          `discount_amount` decimal(10, 2) NOT NULL,
+                          `expiry_date` date NOT NULL,
+                          `is_used` bit(1) NOT NULL DEFAULT b'0',
+                          `user_id` bigint(20) NOT NULL,
+                          `reservation_id` bigint(20) DEFAULT NULL,
+                          PRIMARY KEY (`id`),
+                          UNIQUE KEY `UK_coupon_reservation_id` (`reservation_id`),
+                          KEY `FK_coupon_to_user` (`user_id`),
+                          CONSTRAINT `FK_coupon_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+                          CONSTRAINT `FK_coupon_to_reservation` FOREIGN KEY (`reservation_id`) REFERENCES `reservation` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 결제 수단 테이블 (변경 없음)

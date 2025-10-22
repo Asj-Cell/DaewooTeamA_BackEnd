@@ -1,5 +1,8 @@
 package com.example.backend.Reservation;
 
+import com.example.backend.coupon.CouponRepository;
+import com.example.backend.coupon.entity.Coupon;
+import com.example.backend.user.entity.User;
 import com.example.backend.pay.dto.PaymentPageDto;
 import com.example.backend.review.ReviewService;
 import com.example.backend.review.dto.ReviewPageTotalInfoDto;
@@ -18,7 +21,8 @@ import java.time.temporal.ChronoUnit;
 public class ReservationService {
 
     private final RoomRepository roomRepository;
-    private final ReviewService reviewService; // 기존에 만들어둔 ReviewService 활용
+    private final ReviewService reviewService;
+    private final CouponRepository couponRepository; // <-- 2025-10-22 [수정] CouponRepository 주입
 
     // 세금 비율 (10%)
     private static final BigDecimal TAX_RATE = new BigDecimal("0.10");
@@ -26,28 +30,33 @@ public class ReservationService {
     private static final BigDecimal SERVICE_FEE = new BigDecimal("5000");
 
     @Transactional(readOnly = true)
-    public PaymentPageDto getPaymentPreviewDetails(Long roomId, LocalDate checkInDate, LocalDate checkOutDate) {
+    public PaymentPageDto getPaymentPreviewDetails(Long roomId, LocalDate checkInDate, LocalDate checkOutDate, Long couponId, User user) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found"));
         ReviewPageTotalInfoDto reviewInfo = reviewService.getReviewTotalCountAndRating(room.getHotel().getId());
 
-        // --- [S] 수정된 부분: 상세 금액 계산 ---
         long nights = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
-
-        // 1. 소계 (방 가격 * 숙박일)
         BigDecimal subtotal = room.getPrice().multiply(new BigDecimal(nights));
-
-        // 2. 세금 (소계의 10%)
         BigDecimal taxes = subtotal.multiply(TAX_RATE);
-
-        // 3. 서비스 수수료 (고정값)
         BigDecimal serviceFee = SERVICE_FEE;
 
-        // 4. 할인 (현재 0)
-        BigDecimal discount = BigDecimal.ZERO; // 요청대로 일단 0으로 고정
+
+        BigDecimal discount = BigDecimal.ZERO;
+
+        // 사용자가 로그인했고(user != null), 쿠폰 ID를 넘겼다면(couponId != null)
+        if (user != null && couponId != null) {
+            // 쿠폰을 조회하고 검증합니다.
+            Coupon coupon = couponRepository.findById(couponId)
+                    .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + couponId));
+
+            // 쿠폰이 이 사용자의 것이고 유효한지 검사
+            if (isCouponValid(coupon, user)) {
+                discount = coupon.getDiscountAmount();
+            }
+        }
 
         // 5. 최종 금액
         BigDecimal totalPrice = subtotal.add(taxes).add(serviceFee).subtract(discount);
-        // --- [E] 수정된 부분 ---
+
 
         return PaymentPageDto.builder()
                 .hotelName(room.getHotel().getName())
@@ -55,14 +64,26 @@ public class ReservationService {
                 .checkInDate(checkInDate)
                 .checkoutDate(checkOutDate)
                 .nights(nights)
-                // --- [S] 수정된 부분: DTO에 상세 금액 전달 ---
                 .subtotal(subtotal)
                 .taxes(taxes)
                 .serviceFee(serviceFee)
+                .discount(discount) // <-- 2025-10-22 [수정] DTO에 할인 금액 전달
                 .totalPrice(totalPrice)
-                // --- [E] 수정된 부분 ---
                 .reviewCount(reviewInfo.getTotalReviews())
                 .avgRating(reviewInfo.getAverageRating())
                 .build();
+    }
+
+    /**
+     * 2025-10-22 [추가] 쿠폰이 이 사용자가 사용 가능한지 검증하는 헬퍼 메소드
+     */
+    private boolean isCouponValid(Coupon coupon, User user) {
+        if (coupon == null || user == null) {
+            return false;
+        }
+        // 2025-10-22 [추가] 1. 소유자 확인, 2. 사용 여부 확인, 3. 만료일 확인
+        return coupon.getUser().getId().equals(user.getId()) &&
+                !coupon.isUsed() &&
+                !coupon.getExpiryDate().isBefore(LocalDate.now());
     }
 }
