@@ -1,26 +1,26 @@
 package com.example.backend.hotel.hotelfilters.dto;
 
 import com.example.backend.user.dto.UserProfileRequestDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 /**
  * 사용자가 입력하는 필터의 종류 dto
  */
 public class HotelFilterRequestDto {
     // 첫 페이지: 예약 가능 관련
     private String cityName;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate checkInDate;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate checkOutDate;
     private Integer minAvailableRooms;
 
@@ -42,5 +42,5 @@ public class HotelFilterRequestDto {
 
     private String sortBy; // "rating" / "priceAsc" / "priceDesc"
 
-    private UserProfileRequestDto loginUser;
+//    private UserProfileRequestDto loginUser;
 }
