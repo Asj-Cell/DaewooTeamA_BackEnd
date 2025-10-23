@@ -341,45 +341,45 @@ INSERT INTO `room` (`id`, `room_number`, `price`, `name`, `view`, `bed`, `max_gu
 -- 객실 이미지 데이터 (room_id를 새로 정렬된 room.id에 맞게 수정)
 INSERT INTO `room_img` (`id`, `image_url`, `size`, `room_id`) VALUES
 -- 호텔 1 이미지 (room_id: 1-4)
-(1, '/images/hotel1/room1.png', 512, 1),
-(2, '/images/hotel1/room2.png', 512, 2),
-(3, '/images/hotel1/room3.png', 512, 3),
-(4, '/images/hotel1/room4.png', 512, 4),
+(1, '/images/hotel1/hotel1_room1.png', 512, 1),
+(2, '/images/hotel1/hotel1_room2.png', 512, 2),
+(3, '/images/hotel1/hotel1_room3.png', 512, 3),
+(4, '/images/hotel1/hotel1_room4.png', 512, 4),
 -- 호텔 2 이미지 (room_id: 5-8)
-(5, '/images/hotel2/room1.png', 512, 5),
-(6, '/images/hotel2/room2.png', 512, 6),
-(7, '/images/hotel2/room3.png', 512, 7),
-(8, '/images/hotel2/room4.png', 512, 8),
+(5, '/images/hotel2/hotel2_room1.png', 512, 5),
+(6, '/images/hotel2/hotel2_room2.png', 512, 6),
+(7, '/images/hotel2/hotel2_room3.png', 512, 7),
+(8, '/images/hotel2/hotel2_room4.png', 512, 8),
 -- 호텔 3 이미지 (room_id: 9-12)
-(9, '/images/hotel3/room1.png', 512, 9),
-(10, '/images/hotel3/room2.png', 512, 10),
-(11, '/images/hotel3/room3.png', 512, 11),
-(12, '/images/hotel3/room4.png', 512, 12),
+(9, '/images/hotel3/hotel3_room1.png', 512, 9),
+(10, '/images/hotel3/hotel3_room2.png', 512, 10),
+(11, '/images/hotel3/hotel3_room3.png', 512, 11),
+(12, '/images/hotel3/hotel3_room4.png', 512, 12),
 -- 호텔 4 이미지 (room_id: 13-16)
-(13, '/images/hotel4/room1.png', 512, 13),
-(14, '/images/hotel4/room2.png', 512, 14),
-(15, '/images/hotel4/room3.png', 512, 15),
-(16, '/images/hotel4/room4.png', 512, 16),
+(13, '/images/hotel4/hotel4_room1.png', 512, 13),
+(14, '/images/hotel4/hotel4_room2.png', 512, 14),
+(15, '/images/hotel4/hotel4_room3.png', 512, 15),
+(16, '/images/hotel4/hotel4_room4.png', 512, 16),
 -- 호텔 5 이미지 (room_id: 17-20)
-(17, '/images/hotel5/room1.png', 512, 17),
-(18, '/images/hotel5/room2.png', 512, 18),
-(19, '/images/hotel5/room3.png', 512, 19),
-(20, '/images/hotel5/room4.png', 512, 20),
+(17, '/images/hotel5/hotel5_room1.png', 512, 17),
+(18, '/images/hotel5/hotel5_room2.png', 512, 18),
+(19, '/images/hotel5/hotel5_room3.png', 512, 19),
+(20, '/images/hotel5/hotel5_room4.png', 512, 20),
 -- 호텔 6 이미지 (room_id: 21-24)
-(21, '/images/hotel6/room1.png', 512, 21),
-(22, '/images/hotel6/room2.png', 512, 22),
-(23, '/images/hotel6/room3.png', 512, 23),
-(24, '/images/hotel6/room4.png', 512, 24),
+(21, '/images/hotel6/hotel6_room1.png', 512, 21),
+(22, '/images/hotel6/hotel6_room2.png', 512, 22),
+(23, '/images/hotel6/hotel6_room3.png', 512, 23),
+(24, '/images/hotel6/hotel6_room4.png', 512, 24),
 -- 호텔 7 이미지 (room_id: 25-28)
-(25, '/images/hotel7/room1.png', 512, 25),
-(26, '/images/hotel7/room2.png', 512, 26),
-(27, '/images/hotel7/room3.png', 512, 27),
-(28, '/images/hotel7/room4.png', 512, 28),
+(25, '/images/hotel7/hotel7_room1.png', 512, 25),
+(26, '/images/hotel7/hotel7_room2.png', 512, 26),
+(27, '/images/hotel7/hotel7_room3.png', 512, 27),
+(28, '/images/hotel7/hotel7_room4.png', 512, 28),
 -- 호텔 8 이미지 (room_id: 29-32)
-(29, '/images/hotel8/room1.png', 512, 29),
-(30, '/images/hotel8/room2.png', 512, 30),
-(31, '/images/hotel8/room3.png', 512, 31),
-(32, '/images/hotel8/room4.png', 512, 32);
+(29, '/images/hotel8/hotel8_room1.png', 512, 29),
+(30, '/images/hotel8/hotel8_room2.png', 512, 30),
+(31, '/images/hotel8/hotel8_room3.png', 512, 31),
+(32, '/images/hotel8/hotel8_room4.png', 512, 32);
 
 
 -- 호텔 이미지 데이터 (요청하신 파일 경로 규칙으로 수정)
