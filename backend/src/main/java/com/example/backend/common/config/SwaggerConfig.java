@@ -4,10 +4,11 @@ package com.example.backend.common.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
 
 @Configuration
 public class SwaggerConfig {
@@ -19,20 +20,36 @@ public class SwaggerConfig {
                 .version("v1.0.0")
                 .description("여행 예약 프로젝트의 API 명세서입니다.");
 
-        // API 요청 헤더에 인증 정보 추가
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
+        // OAuth2 스키마 설정
+        SecurityScheme oauth2SecurityScheme = new SecurityScheme()
+                .type(SecurityScheme.Type.OAUTH2)
+                .flows(new OAuthFlows()
+                        .authorizationCode(new OAuthFlow()
+                                .authorizationUrl("/oauth2/authorization/google")
+                                .tokenUrl("/login/oauth2/code/google")
+                                .scopes(new Scopes()
+                                        .addString("email", "email")
+                                        .addString("profile", "profile"))));
 
-        // 인증 방식 설정
+        // JWT 스키마 설정
+        SecurityScheme jwtScheme = new SecurityScheme()
+                .name("bearerAuth")
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
+
+        // 보안 요구사항 설정
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                .addList("oauth2", Arrays.asList("email", "profile"))
+                .addList("bearerAuth");
+
         Components components = new Components()
-                .addSecuritySchemes("bearerAuth", new SecurityScheme()
-                        .name("bearerAuth")
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT"));
+                .addSecuritySchemes("oauth2", oauth2SecurityScheme)
+                .addSecuritySchemes("bearerAuth", jwtScheme);
 
         return new OpenAPI()
                 .info(info)
-                .addSecurityItem(securityRequirement)
-                .components(components);
+                .components(components)
+                .addSecurityItem(securityRequirement);
     }
 }

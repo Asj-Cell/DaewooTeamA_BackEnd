@@ -26,30 +26,18 @@ services:
       retries: 5
 
   boot-app:
-    image: asjcell/backend_image:v1.1.7
+    image: asjcell/backend_image:v1.1.12
     container_name: boot_container
     ports:
       - "18888:8888"
+    env_file:
+      - .env  # .env 파일 로드
     environment:
-      SPRING_PROFILES_ACTIVE: prod  # 가장 중요!
+      SPRING_PROFILES_ACTIVE: local
       TZ: Asia/Seoul
-      # MariaDB 환경 변수 (필수!)
-      MARIADB_DATABASE: ${MARIADB_DATABASE}
-      MARIADB_USER: ${MARIADB_USER}
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
-      # Mail 설정
-      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
-      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
-      # JWT 설정
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-      # OAuth 설정
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
-      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
     depends_on:
       mariadb:
-        condition: service_healthy  # MariaDB가 준비될 때까지 대기
+        condition: service_healthy
     networks:
       - mjc_network
 

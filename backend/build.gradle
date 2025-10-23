@@ -54,6 +54,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // 애는 소셜 로그인
     implementation 'org.springframework.boot:spring-boot-starter-mail' // 이거 이메일 받는 용도임
 
+    
 //    runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
 }
 

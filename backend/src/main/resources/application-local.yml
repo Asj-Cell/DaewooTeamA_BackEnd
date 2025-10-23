@@ -1,58 +1,88 @@
-# main/resources/application-local.yml
-
 spring:
   config:
     activate:
       on-profile: local
 
-  # --- 로컬 DB 설정 ---
+  # --- 로컬 DB 설정 (Docker Compose) ---
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:13306/booking_db
+    url: jdbc:mariadb://localhost:13306/${MARIADB_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
     username: ${MARIADB_USER}
     password: ${MARIADB_PASSWORD}
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
 
   # --- 로컬 JPA 설정 ---
   jpa:
-    hibernate:
-      ddl-auto: update  # 개발시 자동 스키마 업데이트
+    show-sql: true
     properties:
       hibernate:
-        show_sql: true  # 로컬에서는 콘솔에도 출력
+        format_sql: true
+        generate_statistics: true
+        jdbc:
+          batch_size: 50
+          fetch_size: 100
 
   # --- OAuth2 로컬 설정 ---
   security:
     oauth2:
       client:
         registration:
+          google:
+            redirect-uri: "http://localhost:18888/login/oauth2/code/google"
+            client-name: Google
           naver:
-            redirect-uri: "http://localhost:8888/login/oauth2/code/naver"
+            redirect-uri: "http://localhost:18888/login/oauth2/code/naver"
+            client-name: Naver
           kakao:
-            redirect-uri: "http://localhost:8888/login/oauth2/code/kakao"
+            redirect-uri: "http://localhost:18888/login/oauth2/code/kakao"
+            client-name: Kakao
 
-# --- OAuth2 로컬 리다이렉트 URI ---
+# --- 애플리케이션 설정 ---
 app:
+  url: http://localhost:18888
   oauth2:
-    authorized-redirect-uri: http://localhost:80/
+    authorized-redirect-uri: "http://localhost:80"
 
-# --- 로컬 개발용 상세 로그 ---
+# --- 로깅 설정 ---
 logging:
   level:
     root: INFO
     com.example.backend: DEBUG
     org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.transaction: DEBUG
 
-# --- Swagger UI 활성화 (로컬 개발용) ---
+# --- Swagger UI 설정 ---
 springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    doc-expansion: none
+    try-it-out-enabled: true
   api-docs:
     enabled: true
     path: /v3/api-docs
-toss:
-  payments:
-    #  백엔드 전용: 결제 승인/취소 시 서버에서만 사용하는 비밀 키
-    secret-key: "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6 "
+  default-produces-media-type: application/json
+  show-actuator: true
+
+# --- 개발용 프로필 활성화 ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    info:
+      env:
+        enabled: true
