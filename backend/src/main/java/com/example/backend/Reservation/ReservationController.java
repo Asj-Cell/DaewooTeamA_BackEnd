@@ -41,6 +41,7 @@ public class ReservationController {
                 checkOutDate,
                 couponId, // 2025-10-22 [수정] 서비스로 쿠폰 ID 전달
                 user      // 2025-10-22 [수정] 서비스로 사용자 정보 전달
+
         );
 
         return ResponseEntity.ok(previewDetails);

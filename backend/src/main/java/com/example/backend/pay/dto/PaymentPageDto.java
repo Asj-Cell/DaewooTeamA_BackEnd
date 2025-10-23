@@ -25,4 +25,7 @@ public class PaymentPageDto {
 
     private final long reviewCount;
     private final double avgRating;
+
+    private final String cityName;
+    private final String country;
 }

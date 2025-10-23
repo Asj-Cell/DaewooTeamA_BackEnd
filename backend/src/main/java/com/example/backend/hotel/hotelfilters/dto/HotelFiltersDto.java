@@ -27,4 +27,6 @@ public class HotelFiltersDto {
     private Long reviewCount;
     //호텔 도시
     private String cityName;
+    //호텔 나라
+    private String country;
 }

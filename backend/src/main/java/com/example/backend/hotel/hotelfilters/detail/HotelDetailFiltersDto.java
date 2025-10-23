@@ -39,11 +39,12 @@ public class HotelDetailFiltersDto extends HotelFiltersDto {
                                  boolean isFavorite,
                                  Long reviewCount,
                                  String cityName,
+                                 String country,
                                  List<String> amenities,
                                  List<RoomDto> rooms,
                                  String overview,
                                  List<String> roomImageUrls) {
-        super(id, name, address, grade, amenitiesCount, price,rating, imageUrls, isFavorite, reviewCount, cityName);
+        super(id, name, address, grade, amenitiesCount, price,rating, imageUrls, isFavorite, reviewCount, cityName, country);
         this.amenities = amenities;
         this.rooms = rooms;
         this.overview = overview;

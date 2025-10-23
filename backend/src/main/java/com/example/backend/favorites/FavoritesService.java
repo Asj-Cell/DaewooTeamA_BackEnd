@@ -55,7 +55,8 @@ public class FavoritesService {
                             hotelImageUrls,
                             true, // 찜 여부 무조건 true
                             reviewCount,
-                            h.getCity().getCityName()
+                            h.getCity().getCityName(),
+                            h.getCity().getCountry()
                     );
                 })
                 .collect(Collectors.toList());

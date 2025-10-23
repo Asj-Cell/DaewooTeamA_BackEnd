@@ -44,6 +44,7 @@ CREATE TABLE `user` (
 CREATE TABLE `city` (
                         `id` bigint(20) NOT NULL AUTO_INCREMENT,
                         `city_name` varchar(20) NOT NULL,
+                        `country` varchar(20) NOT NULL,
                         PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -270,9 +271,17 @@ VALUES
     (5, '정유진', 'yujin.jung@example.com', '$2a$10$zvcbz5AhunlTYx9Qc1tpUuJWSC1swxWHNok6Q/3q8D5xb.9fPfqAO', '010-5678-9012', '광주시 서구', '1998-03-30', '/uploads/profile5.png', '/uploads/bg5.png');
 
 -- 도시 데이터
-INSERT INTO `city` (`id`, `city_name`) VALUES
-                                           (1, '서울'), (2, '부산'), (3, '제주'), (4, '인천'), (5, '경주'),
-                                           (6, '파리'), (7, '런던'), (8, '도쿄'), (9, '뉴욕'), (10, '방콕');
+INSERT INTO `city` (`id`, `country`, `city_name`) VALUES
+                                                      (1, '대한민국', '서울'),
+                                                      (2, '대한민국', '부산'),
+                                                      (3, '대한민국', '제주'),
+                                                      (4, '대한민국', '인천'),
+                                                      (5, '대한민국', '경주'),
+                                                      (6, '프랑스', '파리'),
+                                                      (7, '영국', '런던'),
+                                                      (8, '일본', '도쿄'),
+                                                      (9, '미국', '뉴욕'),
+                                                      (10, '태국', '방콕');
 
 -- 호텔 데이터
 INSERT INTO `hotel` (`id`, `name`, `grade`, `overview`, `latitude`, `longitude`, `address`, `checkin_time`, `checkout_time`, `city_id`) VALUES

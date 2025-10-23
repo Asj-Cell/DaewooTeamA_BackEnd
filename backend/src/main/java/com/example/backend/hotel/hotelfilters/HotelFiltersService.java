@@ -62,7 +62,8 @@ public class HotelFiltersService {
                             hotelImageUrls,
                             isFavorite,
                             reviewCount,
-                            h.getCity().getCityName()
+                            h.getCity().getCityName(),
+                            h.getCity().getCountry()
                     );
                 })
                 .filter(dto -> request.getMinAvgRating() == null || dto.getRating() >= request.getMinAvgRating())
