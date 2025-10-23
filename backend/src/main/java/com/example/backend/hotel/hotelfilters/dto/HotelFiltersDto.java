@@ -25,4 +25,6 @@ public class HotelFiltersDto {
     private List<String> imageUrls;
     private Boolean favoriteId;
     private Long reviewCount;
+    //호텔 도시
+    private String cityName;
 }
