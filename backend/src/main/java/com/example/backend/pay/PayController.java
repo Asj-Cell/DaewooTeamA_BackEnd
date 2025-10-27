@@ -4,12 +4,14 @@ import com.example.backend.pay.dto.FinalPaymentRequestDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.io.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/pay")
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class PayController {
             return ResponseEntity.ok(reservationId);
         } catch (Exception e) {
             //  실패 시 에러 메시지와 400 Bad Request 상태를 반환합니다.
+            log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -61,6 +64,7 @@ public class PayController {
             payService.cancelPaymentAndReservation(reservationId, requestDto.getCancelReason(), userId);
             return ResponseEntity.ok("예약 및 결제가 성공적으로 취소되었습니다.");
         } catch (Exception e) {
+            log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
