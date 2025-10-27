@@ -3,6 +3,7 @@ package com.example.backend.amenities;
 import com.example.backend.amenities.entity.Amenities;
 import com.example.backend.amenities.dto.AmenitiesDto;
 import com.example.backend.hotel.HotelRepository;
+import com.example.backend.hotel.HotelService;
 import com.example.backend.hotel.entity.Hotel;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AmenitiesService {
 
     private final HotelRepository hotelRepository;
+    private final HotelService hotelService;
 
     public AmenitiesDto updateAmenities(Long hotelId, AmenitiesDto amenitiesDto) {
         Hotel hotel = hotelRepository.findById(hotelId)
@@ -24,19 +26,10 @@ public class AmenitiesService {
         if (amenities == null) {
             amenities = new Amenities();
             hotel.setAmenities(amenities);
+            amenities.setHotel(hotel);
         }
 
-        // HotelService의 헬퍼 메소드를 재사용하거나 여기에 직접 구현
-        amenities.setFrontDesk24(amenitiesDto.isFrontDesk24());
-        amenities.setOutdoorPool(amenitiesDto.isOutdoorPool());
-        amenities.setIndoorPool(amenitiesDto.isIndoorPool());
-        amenities.setSpaWellnessCenter(amenitiesDto.isSpaWellnessCenter());
-        amenities.setRestaurant(amenitiesDto.isRestaurant());
-        amenities.setRoomservice(amenitiesDto.isRoomservice());
-        amenities.setFitnessCenter(amenitiesDto.isFitnessCenter());
-        amenities.setBarLounge(amenitiesDto.isBarLounge());
-        amenities.setTeaCoffeeMachine(amenitiesDto.isTeaCoffeeMachine());
-        amenities.setAirConditioner(amenitiesDto.isAirConditioner());
+        hotelService.updateAmenitiesEntity(amenities, amenitiesDto);
 
         return new AmenitiesDto(
                 amenities.isFrontDesk24(), amenities.isOutdoorPool(), amenities.isIndoorPool(),

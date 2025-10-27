@@ -19,7 +19,7 @@ import java.util.List;
 public class CouponController {
 
     private final CouponService couponService;
-    private final UserRepository userRepository; // User 엔티티를 찾기 위해 필요
+    private final UserRepository userRepository;
 
     /**
      * 웰컴 쿠폰 발급 API
@@ -27,8 +27,6 @@ public class CouponController {
     @PostMapping("/my/coupons/welcome")
     public ResponseEntity<String> issueWelcomeCoupon(@AuthenticationPrincipal UserDetails userDetails) {
         User user = findUserFromUserDetails(userDetails);
-
-        // [수정] CouponService의 'issueWelcomeCoupon' 메소드 호출
         couponService.WelcomeCoupon(user);
 
         return ResponseEntity.ok("웰컴 쿠폰이 발급되었습니다.");
