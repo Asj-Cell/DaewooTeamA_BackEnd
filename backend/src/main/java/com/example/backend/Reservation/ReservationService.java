@@ -2,6 +2,7 @@ package com.example.backend.Reservation;
 
 import com.example.backend.coupon.CouponRepository;
 import com.example.backend.coupon.entity.Coupon;
+import com.example.backend.hotel.entity.Hotel;
 import com.example.backend.user.entity.User;
 import com.example.backend.pay.dto.PaymentPageDto;
 import com.example.backend.review.ReviewService;
@@ -71,6 +72,12 @@ public class ReservationService {
                 .totalPrice(totalPrice)
                 .reviewCount(reviewInfo.getTotalReviews())
                 .avgRating(reviewInfo.getAverageRating())
+                .cityName(room.getHotel().getCity().getCityName())
+                .country(room.getHotel().getCity().getCountry())
+                .latitude(room.getHotel().getLatitude())
+                .longitude(room.getHotel().getLongitude())
+                .view(room.getView())
+                .bed(room.getBed())
                 .build();
     }
 

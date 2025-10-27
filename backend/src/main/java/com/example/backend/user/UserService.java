@@ -130,11 +130,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<ReservationTicketDto> getUserReservations(Long userId) { // 1. 반환 타입 변경
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
-
+        List<Reservation> reservations = reservationRepository.findAllByUserIdWithDetails(userId);
         // 2. Reservation을 ReservationTicketDto로 변환
-        return user.getReservations().stream()
+        return reservations.stream()
                 .map(reservation -> ReservationTicketDto.builder()
                         .reservation(reservation)
                         .build())
