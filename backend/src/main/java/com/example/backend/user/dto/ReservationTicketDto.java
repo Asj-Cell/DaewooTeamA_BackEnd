@@ -1,11 +1,14 @@
 package com.example.backend.user.dto;
 
 import com.example.backend.Reservation.Reservation;
+import com.example.backend.hotel.entity.HotelImage;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 
@@ -22,6 +25,11 @@ public class ReservationTicketDto {
     private final String roomName;
     private final String roomBedInfo;
     private final String roomNumber; // 방 번호는 도착 시 배정될 수 있음
+    private final String address;
+    private final String view;
+    private final String bed;
+    private final List<String> hotelImageUrl;
+
 
     // 예약 날짜 및 시간 정보
     private final LocalDate checkInDate;
@@ -42,6 +50,12 @@ public class ReservationTicketDto {
         this.roomName = reservation.getRoom().getName();
         this.roomBedInfo = reservation.getRoom().getBed();
         this.roomNumber = reservation.getRoom().getRoomNumber() != null ? reservation.getRoom().getRoomNumber() : "On arrival";
+        this.address = reservation.getRoom().getHotel().getAddress();
+        this.view = reservation.getRoom().getView();
+        this.bed =  reservation.getRoom().getBed();
+        this.hotelImageUrl = reservation.getRoom().getHotel().getImages().stream()
+                .map(HotelImage::getImageUrl)
+                .collect(Collectors.toList());
         this.checkInDate = reservation.getCheckinDate();
         this.checkOutDate = reservation.getCheckoutDate();
         this.checkInTime = reservation.getRoom().getHotel().getCheckinTime(); // Hotel 엔티티의 체크인 시간 사용

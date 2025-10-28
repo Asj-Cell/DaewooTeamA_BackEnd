@@ -71,6 +71,8 @@ public class HotelDetailService {
                 hotelImageUrls,
                 isFavorite,
                 reviewCount,
+                hotel.getCity().getCityName(),
+                hotel.getCity().getCountry(),
                 amenities,
                 rooms,
                 hotel.getOverview(),

@@ -20,6 +20,9 @@ public class City {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "country", nullable = false, length = 20)
+    private String country;
+
     @Column(name = "city_name", nullable = false, length = 20)
     private String cityName;
 
