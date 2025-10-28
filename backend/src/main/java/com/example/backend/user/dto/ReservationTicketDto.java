@@ -27,7 +27,6 @@ public class ReservationTicketDto {
     private final String roomNumber; // 방 번호는 도착 시 배정될 수 있음
     private final String address;
     private final String view;
-    private final String bed;
     private final List<String> hotelImageUrl;
 
 
@@ -52,7 +51,6 @@ public class ReservationTicketDto {
         this.roomNumber = reservation.getRoom().getRoomNumber() != null ? reservation.getRoom().getRoomNumber() : "On arrival";
         this.address = reservation.getRoom().getHotel().getAddress();
         this.view = reservation.getRoom().getView();
-        this.bed =  reservation.getRoom().getBed();
         this.hotelImageUrl = reservation.getRoom().getHotel().getImages().stream()
                 .map(HotelImage::getImageUrl)
                 .collect(Collectors.toList());
