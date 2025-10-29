@@ -55,6 +55,9 @@ async function confirmPayment() {
 
         if (response.ok) {
             // Success: Update UI
+            const reservationId = await response.json(); // 백엔드가 Long(숫자)을 보냈으므로 json()으로 받습니다.
+
+            console.log("최종 승인 성공! 예약 ID:", reservationId);
             if (confirmLoadingSection) confirmLoadingSection.style.display = 'none';
             if (confirmSuccessSection) confirmSuccessSection.style.display = 'flex';
             console.log("최종 승인 성공!");
