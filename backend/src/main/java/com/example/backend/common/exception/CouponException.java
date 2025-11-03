@@ -1,14 +1,12 @@
 package com.example.backend.common.exception;
 
-public enum MemberException {
+public enum CouponException {
 
-    USER_NOT_FOUND(404400, "해당 ID의 사용자를 찾을 수 없습니다."),
-
-    LOGIN_REQUIRED(401401, "로그인이 필요합니다. (토큰 없음)");
+    WELCOME_COUPON_ALREADY_ISSUED(400700, "웰컴 쿠폰은 이미 발급되었습니다.");
 
     private CommonExceptionTemplate t;
 
-    MemberException(int code, String message) {
+    CouponException(int code, String message) {
         this.t = new CommonExceptionTemplate(code, message);
     }
 
