@@ -94,23 +94,27 @@ public class HotelFiltersService {
     // 호텔이 가지고 있는 무료서비스 + 편의시설 카운트
     private int countAmenities(Hotel h) {
         int count = 0;
-        // Freebies
-        if (h.getFreebies().isBreakfastIncluded()) count++;
-        if (h.getFreebies().isFreeParking()) count++;
-        if (h.getFreebies().isFreeWifi()) count++;
-        if (h.getFreebies().isAirportShuttlebus()) count++;
-        if (h.getFreebies().isFreeCancellation()) count++;
+        if(h.getFreebies() != null) {
+            // Freebies
+            if (h.getFreebies().isBreakfastIncluded()) count++;
+            if (h.getFreebies().isFreeParking()) count++;
+            if (h.getFreebies().isFreeWifi()) count++;
+            if (h.getFreebies().isAirportShuttlebus()) count++;
+            if (h.getFreebies().isFreeCancellation()) count++;
+        }
 
         // Amenities
-        if (h.getAmenities().isFrontDesk24()) count++;
-        if (h.getAmenities().isAirConditioner()) count++;
-        if (h.getAmenities().isFitnessCenter()) count++;
-        if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++; // 수영장 합치기
-        if (h.getAmenities().isSpaWellnessCenter()) count++;
-        if (h.getAmenities().isRestaurant()) count++;
-        if (h.getAmenities().isRoomservice()) count++;
-        if (h.getAmenities().isBarLounge()) count++;
-        if (h.getAmenities().isTeaCoffeeMachine()) count++;
+        if(h.getAmenities() != null) {
+            if (h.getAmenities().isFrontDesk24()) count++;
+            if (h.getAmenities().isAirConditioner()) count++;
+            if (h.getAmenities().isFitnessCenter()) count++;
+            if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++; // 수영장 합치기
+            if (h.getAmenities().isSpaWellnessCenter()) count++;
+            if (h.getAmenities().isRestaurant()) count++;
+            if (h.getAmenities().isRoomservice()) count++;
+            if (h.getAmenities().isBarLounge()) count++;
+            if (h.getAmenities().isTeaCoffeeMachine()) count++;
+        }
 
         return count;
     }

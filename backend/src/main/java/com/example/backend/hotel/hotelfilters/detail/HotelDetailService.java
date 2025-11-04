@@ -1,5 +1,6 @@
 package com.example.backend.hotel.hotelfilters.detail;
 
+import com.example.backend.common.exception.HotelException;
 import com.example.backend.favorites.FavoritesRepository;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.entity.Hotel;
@@ -30,7 +31,9 @@ public class HotelDetailService {
 
     public HotelDetailFiltersDto getHotelDetail(Long hotelId, Long loginUserId, LocalDate checkInDate, LocalDate checkOutDate) {
         Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new RuntimeException("Hotel not found with id: " + hotelId));
+                .orElseThrow(() ->
+                                HotelException.HOTEL_NOT_FOUND.getException()
+                        );
 
         List<String> amenities = getAmenitiesList(hotel);
 
@@ -110,20 +113,24 @@ public class HotelDetailService {
 
     private int countAmenities(Hotel h) {
         int count = 0;
-        if (h.getFreebies().isBreakfastIncluded()) count++;
-        if (h.getFreebies().isFreeParking()) count++;
-        if (h.getFreebies().isFreeWifi()) count++;
-        if (h.getFreebies().isAirportShuttlebus()) count++;
-        if (h.getFreebies().isFreeCancellation()) count++;
-        if (h.getAmenities().isFrontDesk24()) count++;
-        if (h.getAmenities().isAirConditioner()) count++;
-        if (h.getAmenities().isFitnessCenter()) count++;
-        if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++;
-        if (h.getAmenities().isSpaWellnessCenter()) count++;
-        if (h.getAmenities().isRestaurant()) count++;
-        if (h.getAmenities().isRoomservice()) count++;
-        if (h.getAmenities().isBarLounge()) count++;
-        if (h.getAmenities().isTeaCoffeeMachine()) count++;
+        if(h.getFreebies() != null) {
+            if (h.getFreebies().isBreakfastIncluded()) count++;
+            if (h.getFreebies().isFreeParking()) count++;
+            if (h.getFreebies().isFreeWifi()) count++;
+            if (h.getFreebies().isAirportShuttlebus()) count++;
+            if (h.getFreebies().isFreeCancellation()) count++;
+        }
+        if(h.getAmenities() != null) {
+            if (h.getAmenities().isFrontDesk24()) count++;
+            if (h.getAmenities().isAirConditioner()) count++;
+            if (h.getAmenities().isFitnessCenter()) count++;
+            if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++;
+            if (h.getAmenities().isSpaWellnessCenter()) count++;
+            if (h.getAmenities().isRestaurant()) count++;
+            if (h.getAmenities().isRoomservice()) count++;
+            if (h.getAmenities().isBarLounge()) count++;
+            if (h.getAmenities().isTeaCoffeeMachine()) count++;
+        }
         return count;
     }
 
