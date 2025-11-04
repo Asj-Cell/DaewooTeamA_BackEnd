@@ -13,6 +13,7 @@ public class UserProfileResponseDto {
     private final String phoneNumber;
     private final String address;
     private final LocalDate birthDate;
+    private final String provider;
 
     public UserProfileResponseDto(User user) {
         this.userName = user.getUserName();
@@ -20,5 +21,6 @@ public class UserProfileResponseDto {
         this.phoneNumber = user.getPhoneNumber();
         this.address = user.getAddress();
         this.birthDate = user.getBirthDate();
+        this.provider = user.getProvider();
     }
 }
