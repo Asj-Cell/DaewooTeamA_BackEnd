@@ -85,23 +85,27 @@ public class HotelDetailService {
 
     private List<String> getAmenitiesList(Hotel h) {
         List<String> list = new ArrayList<>();
-        if (h.getAmenities().isFrontDesk24()) list.add("24시간 프론트");
-        if (h.getAmenities().isAirConditioner()) list.add("에어컨");
-        if (h.getAmenities().isFitnessCenter()) list.add("헬스장");
-        if (h.getAmenities().isOutdoorPool()) list.add("야외 수영장");
-        if (h.getAmenities().isIndoorPool()) list.add("실내 수영장");
-        if (h.getAmenities().isSpaWellnessCenter()) list.add("스파");
-        if (h.getAmenities().isRestaurant()) list.add("레스토랑");
-        if (h.getAmenities().isRoomservice()) list.add("룸서비스");
-        if (h.getAmenities().isBarLounge()) list.add("바/라운지");
-        if (h.getAmenities().isTeaCoffeeMachine()) list.add("차/커피");
-
-        if (h.getFreebies().isBreakfastIncluded()) list.add("조식 포함");
-        if (h.getFreebies().isFreeParking()) list.add("무료 주차");
-        if (h.getFreebies().isFreeWifi()) list.add("무료 와이파이");
-        if (h.getFreebies().isAirportShuttlebus()) list.add("공항 셔틀버스");
-        if (h.getFreebies().isFreeCancellation()) list.add("무료 취소");
+        if(h.getAmenities() != null) {
+            if (h.getAmenities().isFrontDesk24()) list.add("24시간 프론트");
+            if (h.getAmenities().isAirConditioner()) list.add("에어컨");
+            if (h.getAmenities().isFitnessCenter()) list.add("헬스장");
+            if (h.getAmenities().isOutdoorPool()) list.add("야외 수영장");
+            if (h.getAmenities().isIndoorPool()) list.add("실내 수영장");
+            if (h.getAmenities().isSpaWellnessCenter()) list.add("스파");
+            if (h.getAmenities().isRestaurant()) list.add("레스토랑");
+            if (h.getAmenities().isRoomservice()) list.add("룸서비스");
+            if (h.getAmenities().isBarLounge()) list.add("바/라운지");
+            if (h.getAmenities().isTeaCoffeeMachine()) list.add("차/커피");
+        }
+        if(h.getFreebies() != null) {
+            if (h.getFreebies().isBreakfastIncluded()) list.add("조식 포함");
+            if (h.getFreebies().isFreeParking()) list.add("무료 주차");
+            if (h.getFreebies().isFreeWifi()) list.add("무료 와이파이");
+            if (h.getFreebies().isAirportShuttlebus()) list.add("공항 셔틀버스");
+            if (h.getFreebies().isFreeCancellation()) list.add("무료 취소");
+        }
         return list;
+
     }
 
     private BigDecimal getLowestRoomPrice(Hotel hotel) {

@@ -2,6 +2,7 @@ package com.example.backend.amenities;
 
 import com.example.backend.amenities.entity.Amenities;
 import com.example.backend.amenities.dto.AmenitiesDto;
+import com.example.backend.common.exception.HotelException;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.HotelService;
 import com.example.backend.hotel.entity.Hotel;
@@ -20,7 +21,9 @@ public class AmenitiesService {
 
     public AmenitiesDto updateAmenities(Long hotelId, AmenitiesDto amenitiesDto) {
         Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id: " + hotelId));
+                .orElseThrow(() ->
+                        HotelException.HOTEL_NOT_FOUND.getException()
+                );
 
         Amenities amenities = hotel.getAmenities();
         if (amenities == null) {
