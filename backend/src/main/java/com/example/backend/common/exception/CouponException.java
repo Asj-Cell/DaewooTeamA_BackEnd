@@ -7,6 +7,7 @@ public enum CouponException {
 
     // 400 Bad Request (비즈니스 규칙 위반)
     COUPON_ALREADY_USED(400701, "이미 사용된 쿠폰입니다."),
+
     COUPON_EXPIRED(400702, "만료된 쿠폰입니다."),
 
     // 403 Forbidden (권한 없음)

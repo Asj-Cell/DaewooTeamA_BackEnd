@@ -2,6 +2,10 @@ package com.example.backend.pay;
 
 import com.example.backend.Reservation.Reservation;
 import com.example.backend.Reservation.ReservationRepository;
+import com.example.backend.common.exception.CouponException;
+import com.example.backend.common.exception.HotelException;
+import com.example.backend.common.exception.MemberException;
+import com.example.backend.common.exception.PayException;
 import com.example.backend.coupon.CouponRepository;
 import com.example.backend.coupon.entity.Coupon;
 import com.example.backend.pay.dto.FinalPaymentRequestDto;
@@ -41,12 +45,16 @@ public class PayService {
     private static final BigDecimal SERVICE_FEE = new BigDecimal("5000");
 
     @Transactional
-    public Long processPaymentAndCreateReservation(FinalPaymentRequestDto requestDto, Long userId) throws Exception {
+    public Long processPaymentAndCreateReservation(FinalPaymentRequestDto requestDto, Long userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException()
+                );
         Room room = roomRepository.findById(requestDto.getRoomId())
-                .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + requestDto.getRoomId()));
+                .orElseThrow(() ->
+                        HotelException.ROOM_NOT_FOUND.getException()
+                );
 
         List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(
                 requestDto.getRoomId(),
@@ -54,7 +62,7 @@ public class PayService {
                 requestDto.getCheckOutDate()
         );
         if (!overlappingReservations.isEmpty()) {
-            throw new IllegalStateException("해당 날짜에 이미 예약된 방입니다.");
+            throw HotelException.ROOM_ALREADY_BOOKED.getException();
         }
 
         long nights = ChronoUnit.DAYS.between(requestDto.getCheckInDate(), requestDto.getCheckOutDate());
@@ -67,24 +75,30 @@ public class PayService {
 
         if (requestDto.getCouponId() != null) {
             usedCoupon = couponRepository.findById(requestDto.getCouponId())
-                    .orElseThrow(() -> new EntityNotFoundException("Coupon not found with id: " + requestDto.getCouponId()));
+                    .orElseThrow(() ->
+                            CouponException.COUPON_NOT_FOUND.getException()
+                    );
 
-            boolean isValid = usedCoupon.getUser().getId().equals(userId) &&
-                    !usedCoupon.isUsed() &&
-                    !usedCoupon.getExpiryDate().isBefore(LocalDate.now());
-
-            if (isValid) {
-                discount = usedCoupon.getDiscountAmount();
-            } else {
-                throw new IllegalStateException("유효하지 않은 쿠폰입니다.");
+            // 1. 소유주 검증
+            if (!usedCoupon.getUser().getId().equals(userId)) {
+                throw CouponException.COUPON_NOT_BELONG_TO_USER.getException();
             }
+            // 2. 사용 여부 검증
+            if (usedCoupon.isUsed()) {
+                throw CouponException.COUPON_ALREADY_USED.getException();
+            }
+            // 3. 만료일 검증
+            if (usedCoupon.getExpiryDate().isBefore(LocalDate.now())) {
+                throw CouponException.COUPON_EXPIRED.getException();
+            }
+            discount = usedCoupon.getDiscountAmount();
         }
 
         BigDecimal calculatedTotalPrice = subtotal.add(taxes).add(serviceFee).subtract(discount);
 
         if (calculatedTotalPrice.longValue() != requestDto.getAmount()) {
             log.warn("결제 금액 불일치: [Request: {}], [Server Calculated: {}]", requestDto.getAmount(), calculatedTotalPrice.longValue());
-            throw new IllegalStateException("요청된 결제 금액이 서버에서 계산된 금액과 일치하지 않습니다.");
+            throw PayException.AMOUNT_DISCREPANCY.getException();
         }
 
         JSONObject tossPaymentResult = tossPaymentsService.confirmPayment(
@@ -127,9 +141,11 @@ public class PayService {
      * 결제 및 예약 취소 로직 (트랜잭션 흐름 제어 역할)
      */
     // [수정] 이 메소드에는 @Transactional 제거 (단순 흐름 제어만 하므로)
-    public void cancelPaymentAndReservation(Long reservationId, String cancelReason, Long userId) throws Exception {
+    public void cancelPaymentAndReservation(Long reservationId, String cancelReason, Long userId){
         Pay pay = payRepository.findByReservation_Id(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다."));
+                .orElseThrow(() ->
+                        PayException.PAYMENT_INFORMATION_NOT_FOUND.getException()
+                );
 
         // ⭐ 3. self 대신 payTransactionService 호출
         boolean isCancelSuccessOnToss = payTransactionService.callTossCancelApi(pay.getPaymentKey(), cancelReason);
@@ -139,11 +155,4 @@ public class PayService {
             payTransactionService.updateReservationToCanceled(reservationId, userId);
         }
     }
-
-    // --- ⭐ 5. 아래 두 메소드는 PayTransactionService.java 로 완전히 이동되었으므로 여기서 삭제 ---
-    // @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    // public boolean callTossCancelApi(String paymentKey, String cancelReason) { ... }
-
-    // @Transactional(propagation = Propagation.REQUIRES_NEW)
-    // public void updateReservationToCanceled(Long reservationId, Long userId) { ... }
 }

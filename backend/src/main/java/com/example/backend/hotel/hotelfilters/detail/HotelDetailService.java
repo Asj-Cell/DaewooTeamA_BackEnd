@@ -5,6 +5,7 @@ import com.example.backend.favorites.FavoritesRepository;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.entity.Hotel;
 import com.example.backend.hotel.entity.HotelImage;
+import com.example.backend.hotel.hotelfilters.HotelFiltersService;
 import com.example.backend.review.ReviewRepository;
 import com.example.backend.room.RoomService;
 import com.example.backend.room.dto.RoomDto;
@@ -28,6 +29,7 @@ public class HotelDetailService {
     private final RoomService roomService;
     private final ReviewRepository reviewRepository;
     private final FavoritesRepository favoritesRepository;
+    private final HotelFiltersService  hotelFiltersService;
 
     public HotelDetailFiltersDto getHotelDetail(Long hotelId, Long loginUserId, LocalDate checkInDate, LocalDate checkOutDate) {
         Hotel hotel = hotelRepository.findById(hotelId)
@@ -68,7 +70,7 @@ public class HotelDetailService {
                 hotel.getName(),
                 hotel.getAddress(),
                 hotel.getGrade(),
-                countAmenities(hotel),
+                hotelFiltersService.countAmenities(hotel),
                 getLowestRoomPrice(hotel),
                 avgRating,
                 hotelImageUrls,
@@ -113,29 +115,6 @@ public class HotelDetailService {
                 .map(Room::getPrice)
                 .min(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
-    }
-
-    private int countAmenities(Hotel h) {
-        int count = 0;
-        if(h.getFreebies() != null) {
-            if (h.getFreebies().isBreakfastIncluded()) count++;
-            if (h.getFreebies().isFreeParking()) count++;
-            if (h.getFreebies().isFreeWifi()) count++;
-            if (h.getFreebies().isAirportShuttlebus()) count++;
-            if (h.getFreebies().isFreeCancellation()) count++;
-        }
-        if(h.getAmenities() != null) {
-            if (h.getAmenities().isFrontDesk24()) count++;
-            if (h.getAmenities().isAirConditioner()) count++;
-            if (h.getAmenities().isFitnessCenter()) count++;
-            if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++;
-            if (h.getAmenities().isSpaWellnessCenter()) count++;
-            if (h.getAmenities().isRestaurant()) count++;
-            if (h.getAmenities().isRoomservice()) count++;
-            if (h.getAmenities().isBarLounge()) count++;
-            if (h.getAmenities().isTeaCoffeeMachine()) count++;
-        }
-        return count;
     }
 
     // [추가] 예약 가능 여부를 확인하는 헬퍼 메서드

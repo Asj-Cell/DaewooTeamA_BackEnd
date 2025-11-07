@@ -92,7 +92,7 @@ public class HotelFiltersService {
     }
 
     // 호텔이 가지고 있는 무료서비스 + 편의시설 카운트
-    private int countAmenities(Hotel h) {
+    public int countAmenities(Hotel h) {
         int count = 0;
         if(h.getFreebies() != null) {
             // Freebies

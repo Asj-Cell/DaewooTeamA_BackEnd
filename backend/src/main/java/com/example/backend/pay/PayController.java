@@ -1,5 +1,6 @@
 package com.example.backend.pay;
 
+import com.example.backend.common.exception.MemberException;
 import com.example.backend.pay.dto.FinalPaymentRequestDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,19 +26,13 @@ public class PayController {
     @PostMapping
     public ResponseEntity<?> processPaymentAndCreateReservation(@RequestBody FinalPaymentRequestDto requestDto,
                                                                 @AuthenticationPrincipal UserDetails userDetails) {
-        //  try-catch 구문을 추가하여 서비스단에서 발생하는 예외를 처리합니다.
-        try {
-//            Long userId = Long.parseLong(userDetails.getUsername());
-            //  PayService의 메소드가 Exception을 던질 수 있으므로 try-catch로 감싸줍니다.
-            Long userId = 6L;
-            Long reservationId = payService.processPaymentAndCreateReservation(requestDto, userId);
-            //  성공 시 예약 ID와 200 OK 상태를 반환합니다.
-            return ResponseEntity.ok(reservationId);
-        } catch (Exception e) {
-            //  실패 시 에러 메시지와 400 Bad Request 상태를 반환합니다.
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+        if(userDetails == null) {
+            throw MemberException.LOGIN_REQUIRED.getException();
         }
+        Long userId = Long.parseLong(userDetails.getUsername());
+        Long reservationId = payService.processPaymentAndCreateReservation(requestDto, userId);
+        return ResponseEntity.ok(reservationId);
+
     }
 
     /**
@@ -57,14 +52,12 @@ public class PayController {
             @PathVariable Long reservationId,
             @RequestBody CancelRequestDto requestDto,
             @AuthenticationPrincipal UserDetails userDetails) {
-        try {
+
+            if(userDetails == null) {
+                throw MemberException.LOGIN_REQUIRED.getException();
+            }
             Long userId = Long.parseLong(userDetails.getUsername());
-//            Long userId = 6L;
             payService.cancelPaymentAndReservation(reservationId, requestDto.getCancelReason(), userId);
             return ResponseEntity.ok("예약 및 결제가 성공적으로 취소되었습니다.");
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 }
