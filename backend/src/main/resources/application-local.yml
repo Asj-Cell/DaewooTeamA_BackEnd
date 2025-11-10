@@ -46,7 +46,7 @@ spring:
 app:
   url: http://localhost:18888
   oauth2:
-    authorized-redirect-uri: "http://localhost:80"
+    authorized-redirect-uri: "http://localhost:8080"
 
 # --- 로깅 설정 ---
 logging:

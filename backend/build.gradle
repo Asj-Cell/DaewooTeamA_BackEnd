@@ -19,6 +19,10 @@ configurations {
     }
 }
 
+ext {
+    queryDslVersion = "5.1.0" // 최신 안정 버전 사용 권장
+}
+
 repositories {
     mavenCentral()
 }
@@ -54,10 +58,27 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // 애는 소셜 로그인
     implementation 'org.springframework.boot:spring-boot-starter-mail' // 이거 이메일 받는 용도임
 
-    
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api" // Q-Type 생성 시 필요
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api" // Q-Type 생성 시 필요
+
 //    runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
 }
 
+def querydslGeneratedDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+    main.java.srcDirs += [ querydslGeneratedDir ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.getGeneratedSourceOutputDirectory().set(file(querydslGeneratedDir))
+}
+
+clean {
+    delete file(querydslGeneratedDir)
+}
 tasks.named('test') {
     useJUnitPlatform()
 }

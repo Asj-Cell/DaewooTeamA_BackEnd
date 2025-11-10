@@ -10,8 +10,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class HotelDetailFiltersDto extends HotelFiltersDto {
 
     // 호텔의 상세 편의시설 (문자열 목록으로 내려주기)

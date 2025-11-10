@@ -2,6 +2,7 @@ package com.example.backend.hotel.entity;
 
 import com.example.backend.amenities.entity.Amenities;
 import com.example.backend.freebies.entity.Freebies;
+import com.example.backend.review.entity.Review;
 import com.example.backend.room.entity.Room;
 import jakarta.persistence.*;
 import lombok.*;
@@ -64,4 +65,7 @@ public class Hotel {
 
     @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private Amenities amenities;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 }
