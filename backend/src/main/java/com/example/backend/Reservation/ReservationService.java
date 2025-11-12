@@ -3,6 +3,8 @@ package com.example.backend.Reservation;
 import com.example.backend.coupon.CouponRepository;
 import com.example.backend.coupon.entity.Coupon;
 import com.example.backend.hotel.entity.Hotel;
+import com.example.backend.hotel.entity.HotelImage;
+import com.example.backend.room.entity.RoomImg;
 import com.example.backend.user.entity.User;
 import com.example.backend.pay.dto.PaymentPageDto;
 import com.example.backend.review.ReviewService;
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +62,18 @@ public class ReservationService {
         // 5. 최종 금액
         BigDecimal totalPrice = subtotal.add(taxes).add(serviceFee).subtract(discount);
 
+        List<String> hotelUrls = room.getHotel().getImages().stream()
+                .map(HotelImage::getImageUrl) // HotelImage.java의 imageUrl 필드 사용
+                .collect(Collectors.toList());
+
+        // 2. 룸 이미지 URL (String) 추출 (첫 번째 이미지)
+        // room.getImages()는 List<RoomImage>를 반환한다고 가정합니다.
+        // RoomImage 엔티티도 HotelImage와 같이 getImageUrl() 메서드가 있어야 합니다.
+        List<RoomImg> roomImages = room.getImages(); // 프록시 초기화 (가정)
+        String firstRoomImageUrl = null;
+        if (roomImages != null && !roomImages.isEmpty()) {
+            firstRoomImageUrl = roomImages.get(0).getImageUrl();
+        }
 
         return PaymentPageDto.builder()
                 .hotelName(room.getHotel().getName())
@@ -78,6 +94,8 @@ public class ReservationService {
                 .longitude(room.getHotel().getLongitude())
                 .view(room.getView())
                 .bed(room.getBed())
+                .hotelImagesUrl(hotelUrls)
+                .roomImageUrls(firstRoomImageUrl)
                 .build();
     }
 
