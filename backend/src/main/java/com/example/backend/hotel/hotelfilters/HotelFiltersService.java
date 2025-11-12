@@ -1,143 +1,88 @@
 package com.example.backend.hotel.hotelfilters;
 
-import com.example.backend.favorites.FavoritesRepository;
-import com.example.backend.hotel.entity.Hotel;
+// import com.example.backend.favorites.FavoritesRepository; // 필요 없으면 제거
+import com.example.backend.hotel.entity.Hotel; // 사용하지 않으면 제거
 import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import com.example.backend.hotel.hotelfilters.dto.HotelFilterRequestDto;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.entity.HotelImage;
-import com.example.backend.room.entity.Room;
-import com.example.backend.review.ReviewRepository;
+// import com.example.backend.room.entity.Room; // 사용하지 않으면 제거
+// import com.example.backend.review.ReviewRepository; // 필요 없으면 제거
+
+// --- 이미지 URL 조회를 위한 Import 추가 ---
+import com.example.backend.hotel.HotelImageRepository; // HotelImageRepository 추가 (가정)
+import jakarta.persistence.EntityNotFoundException; // 필요시 추가
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageImpl; // PageImpl 추가
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+// import org.springframework.data.domain.Sort; // 사용하지 않으면 제거
+// import org.springframework.data.jpa.domain.Specification; // 사용하지 않으면 제거
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Comparator;
+import java.math.BigDecimal; // 사용하지 않으면 제거
+import java.time.LocalDate; // 사용하지 않으면 제거
+import java.util.Collections; // Collections 추가
+import java.util.Comparator; // 사용하지 않으면 제거
 import java.util.List;
+import java.util.Map; // Map 추가
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true) // 읽기 전용 트랜잭션으로 변경 (이미지 조회만 추가)
 public class HotelFiltersService {
 
     private final HotelRepository hotelRepository;
-    private final ReviewRepository reviewRepository;
-    private final FavoritesRepository favoritesRepository;
+    private final HotelImageRepository hotelImageRepository; // HotelImageRepository 주입
 
+    @Transactional // 이미지 URL을 DTO에 다시 설정해야 하므로 readOnly = false 유지 (또는 별도 메소드 분리)
     public Page<HotelFiltersDto> filterHotels(HotelFilterRequestDto request, Pageable pageable, Long loginUserId) {
-        // 1. Specification으로 DB에서 필터 적용, 전체 조회
-        Specification<Hotel> spec = HotelSpecifications.withFilters(request);
-        List<Hotel> hotels = hotelRepository.findAll(spec);
+        // 1. 리포지토리에서 이미지 URL을 제외한 기본 DTO 조회
+        Page<HotelFiltersDto> initialResult = hotelRepository.findHotelsByFilters(request, pageable, loginUserId);
 
-        // 2. DTO 변환 + Stream 필터 + 정렬
-        List<HotelFiltersDto> sortedDtos = hotels.stream()
-                .map(h -> {
-                    // 리뷰 기반 평점 계산
-                    Double totalRating = reviewRepository.findTotalRatingByHotelId(h.getId());
-                    long reviewCount = reviewRepository.countByHotelId(h.getId());
-                    double avgRating = (totalRating != null && reviewCount > 0) ? totalRating / reviewCount : 0.0;
+        List<HotelFiltersDto> content = initialResult.getContent();
 
+        // 2. 조회된 호텔 ID 목록 추출
+        List<Long> hotelIds = content.stream()
+                .map(HotelFiltersDto::getId)
+                .toList();
 
-                    boolean isFavorite = (loginUserId != null) && favoritesRepository.existsByUser_IdAndHotel_Id(loginUserId, h.getId());
+        // 3. 호텔 ID 목록으로 이미지 URL 조회 (N+1 문제 방지)
+        Map<Long, List<String>> imagesMap = Collections.emptyMap(); // 기본값 빈 맵
+        if (!hotelIds.isEmpty()) {
+            // HotelImage 엔티티에서 해당 호텔 ID들에 속하는 모든 이미지를 조회 (sequence 순으로 정렬)
+            List<HotelImage> images = hotelImageRepository.findByHotelIdInOrderBySequenceAsc(hotelIds); // 이 메소드가 필요
 
-                    List<String> hotelImageUrls = h.getImages().stream()
-                            .map(HotelImage::getImageUrl)
-                            .toList();
-
-                    return new HotelFiltersDto(
-                            h.getId(),
-                            h.getName(),
-                            h.getAddress(),
-                            h.getGrade(),
-                            countAmenities(h),
-                            getLowestAvailablePrice(h, request),
-                            avgRating,
-                            hotelImageUrls,
-                            isFavorite,
-                            reviewCount,
-                            h.getCity().getCityName(),
-                            h.getCity().getCountry()
-                    );
-                })
-                .filter(dto -> request.getMinAvgRating() == null || dto.getRating() >= request.getMinAvgRating())
-                .sorted(getComparator(request.getSortBy()))
-                .collect(Collectors.toList());
-
-        // 3. 정렬 후 메모리 페이징
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), sortedDtos.size());
-        List<HotelFiltersDto> pageContent = sortedDtos.subList(start, end);
-
-        return new PageImpl<>(pageContent, pageable, sortedDtos.size());
-    }
-
-    // 정렬 기준 Comparator 반환
-    private Comparator<HotelFiltersDto> getComparator(String sortBy) {
-        if ("rating".equalsIgnoreCase(sortBy)) {
-            return Comparator.comparingDouble(HotelFiltersDto::getRating).reversed(); // 평점 내림차순
-        } else if ("priceAsc".equalsIgnoreCase(sortBy)) {
-            return Comparator.comparing(HotelFiltersDto::getPrice); // 가격 오름차순
-        } else if ("priceDesc".equalsIgnoreCase(sortBy)) {
-            return Comparator.comparing(HotelFiltersDto::getPrice).reversed(); // 가격 내림차순
-        } else {
-            return Comparator.comparingLong(HotelFiltersDto::getId); // 기본: ID 순
-        }
-    }
-
-    // 호텔이 가지고 있는 무료서비스 + 편의시설 카운트
-    public int countAmenities(Hotel h) {
-        int count = 0;
-        if(h.getFreebies() != null) {
-            // Freebies
-            if (h.getFreebies().isBreakfastIncluded()) count++;
-            if (h.getFreebies().isFreeParking()) count++;
-            if (h.getFreebies().isFreeWifi()) count++;
-            if (h.getFreebies().isAirportShuttlebus()) count++;
-            if (h.getFreebies().isFreeCancellation()) count++;
+            // 호텔 ID별로 이미지 URL 리스트를 그룹화
+            imagesMap = images.stream()
+                    .collect(Collectors.groupingBy(
+                            img -> img.getHotel().getId(), // HotelImage 엔티티에 getHotel()이 있다고 가정
+                            Collectors.mapping(HotelImage::getImageUrl, Collectors.toList())
+                    ));
         }
 
-        // Amenities
-        if(h.getAmenities() != null) {
-            if (h.getAmenities().isFrontDesk24()) count++;
-            if (h.getAmenities().isAirConditioner()) count++;
-            if (h.getAmenities().isFitnessCenter()) count++;
-            if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++; // 수영장 합치기
-            if (h.getAmenities().isSpaWellnessCenter()) count++;
-            if (h.getAmenities().isRestaurant()) count++;
-            if (h.getAmenities().isRoomservice()) count++;
-            if (h.getAmenities().isBarLounge()) count++;
-            if (h.getAmenities().isTeaCoffeeMachine()) count++;
-        }
+        // 4. 기존 DTO 리스트를 순회하며 이미지 URL 채우기 (새로운 DTO 리스트 생성)
+        Map<Long, List<String>> finalImagesMap = imagesMap; // effectively final
+        List<HotelFiltersDto> contentWithImages = content.stream()
+                .map(dto -> new HotelFiltersDto( // 기존 DTO 정보를 사용하여 새 DTO 생성
+                        dto.getId(),
+                        dto.getName(),
+                        dto.getAddress(),
+                        dto.getGrade(),
+                        dto.getAmenitiesCount(),
+                        dto.getPrice(),
+                        dto.getRating(),
+                        // 해당 호텔 ID의 이미지 URL 리스트를 Map에서 찾아 설정 (없으면 빈 리스트)
+                        finalImagesMap.getOrDefault(dto.getId(), Collections.emptyList()),
+                        dto.getFavoriteId(),
+                        dto.getReviewCount()
+                ))
+                .toList();
 
-        return count;
-    }
-
-    private boolean isRoomAvailable(Room room, LocalDate checkIn, LocalDate checkOut) {
-        if (checkIn == null || checkOut == null) return true;
-        return room.getReservations().stream().noneMatch(reservation ->
-                reservation.getCheckinDate().isBefore(checkOut) &&
-                        reservation.getCheckoutDate().isAfter(checkIn)
-        );
-    }
-
-    private BigDecimal getLowestAvailablePrice(Hotel h, HotelFilterRequestDto request) {
-        return h.getRooms().stream()
-                // 1. 기존 필터: 날짜로 예약 가능한 방 필터링
-                .filter(r -> isRoomAvailable(r, request.getCheckInDate(), request.getCheckOutDate()))
-                // 2. 기존 필터: 최소 수용 인원 필터링
-                .filter(r -> request.getMinAvailableRooms() == null || r.getMaxGuests() >= request.getMinAvailableRooms())
-                .filter(r -> request.getMinPrice() == null || r.getPrice().compareTo(request.getMinPrice()) >= 0)
-                .filter(r -> request.getMaxPrice() == null || r.getPrice().compareTo(request.getMaxPrice()) <= 0)
-
-                .map(Room::getPrice)
-                .min(BigDecimal::compareTo)
-                .orElse(null); // 방 없으면 Null
+        // 5. 이미지 URL이 채워진 새로운 DTO 리스트로 Page 객체 재생성
+        return new PageImpl<>(contentWithImages, initialResult.getPageable(), initialResult.getTotalElements());
     }
 }
