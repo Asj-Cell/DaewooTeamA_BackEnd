@@ -54,8 +54,9 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
     private static final QRoom subRoomForAvail = new QRoom("subRoomForAvail");
     // private static final QReservation subResForAvail = new QReservation("subResForAvail"); // isRoomAvailableSubquery 내부 생성
     private static final QRoom subRoomForGuest = new QRoom("subRoomForGuest");
-    private static final QRoom subRoomForPriceRange = new QRoom("subRoomForPriceRange");
-    private static final QRoom subRoomForAvailPrice = new QRoom("subRoomForAvailPrice");
+    // 가격 범위 관련 서브쿼리 별칭은 더 이상 WHERE 절에서 사용하지 않음
+    // private static final QRoom subRoomForPriceRange = new QRoom("subRoomForPriceRange");
+    // private static final QRoom subRoomForAvailPrice = new QRoom("subRoomForAvailPrice");
     // private static final QReservation subResForAvailPrice = new QReservation("subResForAvailPrice"); // isRoomAvailableSubquery 내부 생성
 
 
@@ -130,9 +131,18 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
                 query.where(conditions);
             }
 
+            // ✅ HAVING 절: 계산된 값 기준 필터링
             // 평점 필터는 'having' 절에서 처리 (avgRating 계산 후)
             if (filter.getMinAvgRating() != null) {
                 query.having(avgRating.goe(filter.getMinAvgRating().doubleValue()));
+            }
+
+            // ✅ 가격 범위 필터를 HAVING 절에 추가 (표시되는 최저가 기준)
+            if (filter.getMinPrice() != null) {
+                query.having(minAvailablePriceExpr.goe(filter.getMinPrice()));
+            }
+            if (filter.getMaxPrice() != null) {
+                query.having(minAvailablePriceExpr.loe(filter.getMaxPrice()));
             }
 
             // 정렬 적용
@@ -147,20 +157,43 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
                     .limit(pageable.getPageSize())
                     .fetch();
 
-            // 카운트 쿼리
+            // ✅ 카운트 쿼리 - 동일한 필터 적용
             JPAQuery<Long> countQuery = queryFactory
                     .select(hotel.countDistinct())
                     .from(hotel)
                     .leftJoin(hotel.rooms, room)
                     .leftJoin(hotel.reviews, review)
                     .leftJoin(hotel.freebies, freebies)
-                    .leftJoin(hotel.amenities, amenities);
+                    .leftJoin(hotel.amenities, amenities)
+                    .groupBy(hotel.id); // HAVING 절 사용을 위해 groupBy 추가
 
             if (conditions != null) {
                 countQuery.where(conditions);
             }
+
+            // 평점 필터
             if (filter.getMinAvgRating() != null) {
-                countQuery.where(avgRatingGoeSubquery(filter.getMinAvgRating()));
+                NumberExpression<Double> countAvgRating = review.userRatingScore.avg().coalesce(0.0);
+                countQuery.having(countAvgRating.goe(filter.getMinAvgRating().doubleValue()));
+            }
+
+            // ✅ 가격 필터 - 카운트 쿼리에도 동일하게 적용
+            if (filter.getMinPrice() != null || filter.getMaxPrice() != null) {
+                // minPriceSubQueryCondition 재사용
+                NumberExpression<BigDecimal> countMinPriceExpr = Expressions.numberOperation(
+                        BigDecimal.class, Ops.COALESCE,
+                        JPAExpressions.select(subRoomForMinPrice.price.min())
+                                .from(subRoomForMinPrice)
+                                .where(minPriceSubQueryCondition),
+                        Expressions.constant(BigDecimal.ZERO)
+                );
+
+                if (filter.getMinPrice() != null) {
+                    countQuery.having(countMinPriceExpr.goe(filter.getMinPrice()));
+                }
+                if (filter.getMaxPrice() != null) {
+                    countQuery.having(countMinPriceExpr.loe(filter.getMaxPrice()));
+                }
             }
 
             return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
@@ -223,17 +256,19 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
             conditions = and(conditions, hotelHasRoomWithMinGuests(filter.getMinAvailableRooms()));
         }
 
-        // 가격 범위 필터
-        if (filter.getMinPrice() != null || filter.getMaxPrice() != null) {
-            if (filter.getCheckInDate() != null && filter.getCheckOutDate() != null) {
-                conditions = and(conditions, hotelHasAvailableRoomInPriceRange(
-                        filter.getCheckInDate(), filter.getCheckOutDate(),
-                        filter.getMinPrice(), filter.getMaxPrice()
-                ));
-            } else {
-                conditions = and(conditions, hotelHasRoomInPriceRange(filter.getMinPrice(), filter.getMaxPrice()));
-            }
-        }
+        // ❌ 가격 범위 필터 제거 - HAVING 절로 이동
+        // 이유: WHERE 절에서는 "가격 범위의 방이 있는지" 체크
+        //       HAVING 절에서는 "표시되는 최저가가 범위 내인지" 체크
+        // if (filter.getMinPrice() != null || filter.getMaxPrice() != null) {
+        //     if (filter.getCheckInDate() != null && filter.getCheckOutDate() != null) {
+        //         conditions = and(conditions, hotelHasAvailableRoomInPriceRange(
+        //                 filter.getCheckInDate(), filter.getCheckOutDate(),
+        //                 filter.getMinPrice(), filter.getMaxPrice()
+        //         ));
+        //     } else {
+        //         conditions = and(conditions, hotelHasRoomInPriceRange(filter.getMinPrice(), filter.getMaxPrice()));
+        //     }
+        // }
 
         // 편의시설 필터
         conditions = and(conditions, hasBreakfast(filter.getBreakfastIncluded()));
@@ -259,17 +294,17 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
     // [FIXED] 에일리어스 생성 시 하이픈 제거
     /**
      * 특정 방이 주어진 체크인-체크아웃 기간에 예약되어 있는지 확인하는 서브쿼리
-     * 
+     *
      * 📌 날짜 겹침 로직:
      * - 예약의 체크인 < 요청 체크아웃 AND 예약의 체크아웃 > 요청 체크인
      * - 이 조건을 만족하면 예약이 "겹친다"고 판단
-     * 
+     *
      * 예시:
      * - 기존 예약: 10/10 ~ 10/15
      * - 요청: 10/12 ~ 10/14 → 겹침 ✅ (예약됨)
      * - 요청: 10/01 ~ 10/09 → 겹침 없음 ❌ (예약 가능)
      * - 요청: 10/16 ~ 10/20 → 겹침 없음 ❌ (예약 가능)
-     * 
+     *
      * @param roomAlias 체크할 방의 별칭
      * @param checkIn 요청 체크인 날짜
      * @param checkOut 요청 체크아웃 날짜
@@ -285,38 +320,6 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
                         resAlias.checkinDate.lt(checkOut),    // 예약 체크인 < 요청 체크아웃
                         resAlias.checkoutDate.gt(checkIn)      // 예약 체크아웃 > 요청 체크인
                 );
-    }
-
-    // 호텔이 특정 가격 범위의 방을 가지고 있는지 (날짜 무관)
-    private BooleanExpression hotelHasRoomInPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
-        if (minPrice == null && maxPrice == null) return Expressions.asBoolean(true).isTrue();
-        BooleanExpression priceCondition = null;
-        if (minPrice != null) { priceCondition = and(priceCondition, subRoomForPriceRange.price.goe(minPrice)); }
-        if (maxPrice != null) { priceCondition = and(priceCondition, subRoomForPriceRange.price.loe(maxPrice)); }
-
-        return JPAExpressions.selectOne()
-                .from(subRoomForPriceRange)
-                .where(subRoomForPriceRange.hotel.id.eq(hotel.id), priceCondition)
-                .exists();
-    }
-
-    // 호텔이 특정 가격 범위의 '예약 가능한' 방을 가지고 있는지
-    private BooleanExpression hotelHasAvailableRoomInPriceRange(LocalDate checkIn, LocalDate checkOut, BigDecimal minPrice, BigDecimal maxPrice) {
-        if (checkIn == null || checkOut == null) return hotelHasRoomInPriceRange(minPrice, maxPrice);
-        if (minPrice == null && maxPrice == null) return hotelHasAvailableRoom(checkIn, checkOut);
-
-        BooleanExpression priceCondition = null;
-        if (minPrice != null) { priceCondition = and(priceCondition, subRoomForAvailPrice.price.goe(minPrice)); }
-        if (maxPrice != null) { priceCondition = and(priceCondition, subRoomForAvailPrice.price.loe(maxPrice)); }
-        // priceCondition이 null이 될 수 없음 (위에서 null 체크함)
-
-        return JPAExpressions.selectOne()
-                .from(subRoomForAvailPrice)
-                .where(
-                        subRoomForAvailPrice.hotel.id.eq(hotel.id),
-                        priceCondition, // priceCondition은 여기서 null이 아님
-                        isRoomAvailableSubquery(subRoomForAvailPrice, checkIn, checkOut).notExists()
-                ).exists();
     }
 
     // [체크인-체크아웃] 기간에 예약 가능한 방을 하나라도 가졌는지
@@ -340,14 +343,14 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
                 .exists();
     }
 
-    // 카운트 쿼리용 평점 필터
-    private BooleanExpression avgRatingGoeSubquery(Integer minRating) {
-        if (minRating == null) return null;
-        return JPAExpressions.select(review.userRatingScore.avg().coalesce(0.0))
-                .from(review)
-                .where(review.hotel.id.eq(hotel.id))
-                .goe(minRating.doubleValue());
-    }
+    // 카운트 쿼리용 평점 필터 (더 이상 사용 안 함 - HAVING 절로 직접 처리)
+    // private BooleanExpression avgRatingGoeSubquery(Integer minRating) {
+    //     if (minRating == null) return null;
+    //     return JPAExpressions.select(review.userRatingScore.avg().coalesce(0.0))
+    //             .from(review)
+    //             .where(review.hotel.id.eq(hotel.id))
+    //             .goe(minRating.doubleValue());
+    // }
 
     // --- 편의시설 / 무료혜택 필터 ---
     private BooleanExpression hasBreakfast(Boolean value) { return value != null && value ? freebies.breakfastIncluded.isTrue() : null; }
@@ -377,4 +380,3 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
         }
     }
 }
-
