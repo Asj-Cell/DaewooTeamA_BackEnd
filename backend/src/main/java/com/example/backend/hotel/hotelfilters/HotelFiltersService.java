@@ -78,7 +78,9 @@ public class HotelFiltersService {
                         // 해당 호텔 ID의 이미지 URL 리스트를 Map에서 찾아 설정 (없으면 빈 리스트)
                         finalImagesMap.getOrDefault(dto.getId(), Collections.emptyList()),
                         dto.getFavoriteId(),
-                        dto.getReviewCount()
+                        dto.getReviewCount(),
+                        dto.getCity(),
+                        dto.getCountry()
                 ))
                 .toList();
 

@@ -24,11 +24,13 @@ public class HotelFiltersDto {
     private final List<String> imageUrls;
     private final Boolean favoriteId;
     private final Long reviewCount;
+    private final String city;
+    private final String country;
     
     @QueryProjection
     public HotelFiltersDto(Long id, String name, String address, Integer grade, 
                          Integer amenitiesCount, BigDecimal price, Double rating,
-                         List<String> imageUrls, Boolean favoriteId, Long reviewCount) {
+                         List<String> imageUrls, Boolean favoriteId, Long reviewCount, String city, String country) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -39,5 +41,7 @@ public class HotelFiltersDto {
         this.imageUrls = imageUrls != null ? imageUrls : List.of();
         this.favoriteId = favoriteId != null && favoriteId;
         this.reviewCount = reviewCount;
+        this.city = city;
+        this.country = country;
     }
 }

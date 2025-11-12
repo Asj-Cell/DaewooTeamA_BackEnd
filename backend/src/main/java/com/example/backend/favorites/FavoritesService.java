@@ -4,6 +4,7 @@ import com.example.backend.common.exception.HotelException;
 import com.example.backend.common.exception.MemberException;
 import com.example.backend.hotel.HotelService;
 import com.example.backend.hotel.hotelfilters.HotelFiltersService;
+import com.example.backend.hotel.hotelfilters.detail.HotelDetailService;
 import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import com.example.backend.favorites.entity.Favorites;
 import com.example.backend.hotel.HotelRepository;
@@ -32,6 +33,7 @@ public class FavoritesService {
     private final UserRepository userRepository;
     private final HotelRepository hotelRepository;
     private final HotelFiltersService  hotelFiltersService;
+    private final HotelDetailService hotelDetailService;
 
 
     public List<HotelFiltersDto> getFavoriteHotels(Long userId) {
@@ -53,7 +55,7 @@ public class FavoritesService {
                             h.getName(),
                             h.getAddress(),
                             h.getGrade(),
-                            hotelFiltersService.countAmenities(h),
+                            hotelDetailService.countAmenities(h),
                             getLowestAvailablePrice(h),
                             avgRating,
                             hotelImageUrls,

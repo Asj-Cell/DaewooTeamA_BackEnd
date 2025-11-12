@@ -3,6 +3,7 @@ package com.example.backend.hotel.hotelfilters.detail;
 import com.example.backend.common.exception.HotelException;
 import com.example.backend.favorites.FavoritesRepository;
 import com.example.backend.hotel.HotelRepository;
+import com.example.backend.hotel.HotelRepositoryImpl;
 import com.example.backend.hotel.entity.Hotel;
 import com.example.backend.hotel.entity.HotelImage;
 import com.example.backend.hotel.hotelfilters.HotelFiltersService;
@@ -29,7 +30,7 @@ public class HotelDetailService {
     private final RoomService roomService;
     private final ReviewRepository reviewRepository;
     private final FavoritesRepository favoritesRepository;
-    private final HotelFiltersService  hotelFiltersService;
+
 
     public HotelDetailFiltersDto getHotelDetail(Long hotelId, Long loginUserId, LocalDate checkInDate, LocalDate checkOutDate) {
         Hotel hotel = hotelRepository.findById(hotelId)
@@ -110,12 +111,6 @@ public class HotelDetailService {
 
     }
 
-    private BigDecimal getLowestRoomPrice(Hotel hotel) {
-        return hotel.getRooms().stream()
-                .map(Room::getPrice)
-                .min(BigDecimal::compareTo)
-                .orElse(BigDecimal.ZERO);
-    }
 
     // [추가] 예약 가능 여부를 확인하는 헬퍼 메서드
     private boolean isRoomAvailable(Room room, LocalDate checkIn, LocalDate checkOut) {

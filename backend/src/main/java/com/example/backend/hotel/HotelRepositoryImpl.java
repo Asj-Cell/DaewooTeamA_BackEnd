@@ -1,5 +1,7 @@
 package com.example.backend.hotel;
 
+import com.example.backend.hotel.entity.City;
+import com.example.backend.hotel.entity.QCity;
 import com.example.backend.hotel.hotelfilters.dto.HotelFilterRequestDto;
 import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import com.example.backend.hotel.hotelfilters.dto.QHotelFiltersDto;
@@ -26,6 +28,7 @@ import java.util.List;
 
 // QClass static import
 import static com.example.backend.Reservation.QReservation.reservation;
+import static com.example.backend.hotel.entity.QCity.city;
 import static com.example.backend.room.entity.QRoom.room;
 import static com.example.backend.amenities.entity.QAmenities.amenities;
 import static com.example.backend.freebies.entity.QFreebies.freebies;
@@ -107,7 +110,11 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
                             avgRating,             // 7. avgRating
                             Expressions.constant(Collections.<String>emptyList()), // 8. imageUrls (서비스에서 채움)
                             isFavoriteExpr,        // 9. isFavorite
-                            reviewCount            // 10. reviewCount
+                            reviewCount,            // 10. reviewCount
+                            city.cityName,
+                            city.country
+
+
                     ))
                     .from(hotel)
                     .leftJoin(hotel.reviews, review)
