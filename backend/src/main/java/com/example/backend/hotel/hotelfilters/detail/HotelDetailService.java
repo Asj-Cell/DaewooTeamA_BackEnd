@@ -3,6 +3,7 @@ package com.example.backend.hotel.hotelfilters.detail;
 import com.example.backend.common.exception.HotelException;
 import com.example.backend.favorites.FavoritesRepository;
 import com.example.backend.hotel.HotelRepository;
+import com.example.backend.hotel.HotelRepositoryImpl;
 import com.example.backend.hotel.entity.Hotel;
 import com.example.backend.hotel.entity.HotelImage;
 import com.example.backend.hotel.hotelfilters.HotelFiltersService;
@@ -29,7 +30,7 @@ public class HotelDetailService {
     private final RoomService roomService;
     private final ReviewRepository reviewRepository;
     private final FavoritesRepository favoritesRepository;
-    private final HotelFiltersService  hotelFiltersService;
+    private final HotelRepositoryImpl hotelRepositoryImpl;
 
     public HotelDetailFiltersDto getHotelDetail(Long hotelId, Long loginUserId, LocalDate checkInDate, LocalDate checkOutDate) {
         Hotel hotel = hotelRepository.findById(hotelId)
@@ -70,7 +71,7 @@ public class HotelDetailService {
                 hotel.getName(),
                 hotel.getAddress(),
                 hotel.getGrade(),
-                hotelFiltersService.countAmenities(hotel),
+                countAmenities(hotel),
                 getLowestRoomPrice(hotel),
                 avgRating,
                 hotelImageUrls,
@@ -83,6 +84,28 @@ public class HotelDetailService {
                 hotel.getOverview(),
                 roomImageUrls
         );
+    }
+
+
+
+
+    public int countAmenities(Hotel h) {
+        int count = 0;
+        if (h.getFreebies().isBreakfastIncluded()) count++;
+        if (h.getFreebies().isFreeParking()) count++;
+        if (h.getFreebies().isFreeWifi()) count++;
+        if (h.getFreebies().isAirportShuttlebus()) count++;
+        if (h.getFreebies().isFreeCancellation()) count++;
+        if (h.getAmenities().isFrontDesk24()) count++;
+        if (h.getAmenities().isAirConditioner()) count++;
+        if (h.getAmenities().isFitnessCenter()) count++;
+        if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++;
+        if (h.getAmenities().isSpaWellnessCenter()) count++;
+        if (h.getAmenities().isRestaurant()) count++;
+        if (h.getAmenities().isRoomservice()) count++;
+        if (h.getAmenities().isBarLounge()) count++;
+        if (h.getAmenities().isTeaCoffeeMachine()) count++;
+        return count;
     }
 
     private List<String> getAmenitiesList(Hotel h) {
