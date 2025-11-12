@@ -1,19 +1,61 @@
-# DaewooTeam1-
+# 🏨 여행 예약 백엔드 프로젝트
 
-# spring boot 환경변수 값 
-```
-backend/.env file
+Spring Boot, JPA, Spring Security를 기반으로 구축한 호텔 및 여행 상품 예약 플랫폼 백엔드 API입니다.
 
-# MariaDB Credentials
-MARIADB_ROOT_PASSWORD=1234
-MARIADB_DATABASE=booking_db
-MARIADB_USER=book_user
-MARIADB_PASSWORD=book_1234
+---
 
-# Naver Mail Credentials
-SPRING_MAIL_USERNAME=naverId
-SPRING_MAIL_PASSWORD=naverId app password
+## 💻 주요 기술 스택
 
-# JWT Secret Key
-JWT_SECRET_KEY= base key
-```
+* **Backend:** Java, Spring Boot 3
+* **Database:** MariaDB, JPA (Hibernate), Querydsl
+* **Security:** Spring Security, JWT, OAuth2 (Google, Naver, Kakao)
+* **Payment:** Toss Payments API
+* **API Docs:** Swagger (Springdoc)
+* **Config:** YML (local, prod 프로필 분리)
+
+---
+
+## ✨ 주요 기능
+
+### 1. 👤 인증 (Auth)
+
+* **일반 회원가입:** 이메일, 비밀번호 기반 회원가입
+* **로그인:** JWT 토큰 발급 (액세스 토큰)
+* **소셜 로그인:** Google, Naver, Kakao 연동
+* **비밀번호 찾기:** 이메일 인증 코드를 통한 비밀번호 재설정
+
+### 2. 🙋 사용자 (User)
+
+* **프로필 관리:** 사용자 정보(이름, 주소, 연락처 등) 조회 및 수정
+* **이미지 업로드:** 프로필 및 배경 이미지 변경 (로컬 서버 `uploads` 디렉토리에 저장)
+* **결제 수단:** 사용자 카드 등록 및 삭제
+
+### 3. 🏨 호텔 및 객실 (Hotel & Room)
+
+* **호텔 필터링:** Querydsl을 활용한 동적 검색 (지역, 날짜, 가격, 평점, 편의시설 등)
+* **호텔 상세 조회:** 호텔 정보, 객실 목록(예약 가능 여부 포함), 리뷰, 찜 여부 반환
+* **리뷰 (Review):** 호텔별 리뷰 CRUD (작성, 조회, 수정, 삭제)
+* **찜 (Favorites):** 호텔 찜하기 (toggle) 및 찜 목록 조회
+* **호텔/객실 관리:** 호텔 및 객실 CRUD (관리자용)
+
+### 4. 📅 예약 및 결제 (Reservation & Payment)
+
+* **결제 연동:** Toss Payments API를 이용한 결제 승인 및 취소
+* **예약 생성:** 결제 완료 시 예약 데이터 생성 (날짜 중복 검증)
+* **예약 조회:** '예약 티켓' DTO를 통한 상세 내역 조회
+* **예약 취소:** 결제 취소 연동 및 예약 내역 소프트 삭제(Soft Delete)
+
+### 5. ✈️ 기타
+
+* **여행 패키지:** 메인 페이지용 인기/추천 여행 상품 조회
+* **API 문서화:** Swagger(Springdoc)를 통한 API 명세 자동화
+* **예외 처리:** `@RestControllerAdvice`를 이용한 공통 예외 처리
+* **CORS 설정:** `WebConfig`를 통한 전역 CORS 설정
+
+---
+
+## 🚀 실행 방법
+
+1.  `application.yml`에 환경 변수 (DB 정보, JWT Secret Key, OAuth 클라이언트 ID/Secret)를 설정합니다.
+2.  `application-local.yml` 프로필로 애플리케이션을 실행합니다. (기본 포트: `8888`)
+3.  `http://localhost:8888/swagger-ui.html` 에 접속하여 API 문서를 확인하고 테스트할 수 있습니다.

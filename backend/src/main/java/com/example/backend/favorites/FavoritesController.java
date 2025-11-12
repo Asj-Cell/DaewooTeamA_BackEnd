@@ -21,6 +21,7 @@ public class FavoritesController {
 
     private final FavoritesService favoritesService;
 
+
     @GetMapping("/api/favorites")
     public ResponseEntity<List<HotelFiltersDto>> getFavoriteHotels(@AuthenticationPrincipal UserDetails userDetails) {
         Long userId = Long.parseLong(userDetails.getUsername());

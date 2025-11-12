@@ -18,7 +18,7 @@ public class FinalPaymentRequestDto {
     private Long roomId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
-
+    private Long couponId;
 //    // 결제 내역(Pay)을 생성하기 위한 정보
 //    private Long paymentId; // 사용자가 선택한 카드의 ID (Payment 엔티티의 ID)
 }

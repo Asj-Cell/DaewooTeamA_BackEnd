@@ -76,22 +76,14 @@ app:
     max-age: 3600
 
 # --- 로깅 설정 ---
+# ⚠️ 상세 로그 설정은 logback-spring.xml에서 관리
+# 여기서는 로그 레벨만 설정
 logging:
   level:
     root: INFO
     com.example.backend: INFO
     org.hibernate.SQL: WARN
     org.springframework.security: WARN
-  file:
-    name: /app/logs/application.log
-    max-size: 50MB
-    max-history: 30
-    total-size-cap: 1GB
-  logback:
-    rollingpolicy:
-      max-history: 30
-      max-file-size: 50MB
-      total-size-cap: 1GB
 
 # --- Toss Payments 설정 ---
 toss:

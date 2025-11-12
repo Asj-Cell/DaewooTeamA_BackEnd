@@ -124,7 +124,7 @@ public class HotelService {
         );
     }
 
-    private void updateAmenitiesEntity(Amenities amenities, AmenitiesDto dto) {
+    public void updateAmenitiesEntity(Amenities amenities, AmenitiesDto dto) {
         amenities.setFrontDesk24(dto.isFrontDesk24());
         amenities.setOutdoorPool(dto.isOutdoorPool());
         amenities.setIndoorPool(dto.isIndoorPool());
@@ -137,7 +137,7 @@ public class HotelService {
         amenities.setAirConditioner(dto.isAirConditioner());
     }
 
-    private void updateFreebiesEntity(Freebies freebies, FreebiesDto dto) {
+    public void updateFreebiesEntity(Freebies freebies, FreebiesDto dto) {
         freebies.setBreakfastIncluded(dto.isBreakfastIncluded());
         freebies.setFreeParking(dto.isFreeParking());
         freebies.setFreeWifi(dto.isFreeWifi());
