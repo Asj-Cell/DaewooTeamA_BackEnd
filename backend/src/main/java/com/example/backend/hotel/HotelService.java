@@ -3,6 +3,7 @@ package com.example.backend.hotel;
 import com.example.backend.amenities.dto.AmenitiesDto;
 import com.example.backend.amenities.entity.Amenities;
 
+import com.example.backend.common.exception.HotelException;
 import com.example.backend.freebies.dto.FreebiesDto;
 import com.example.backend.freebies.entity.Freebies;
 import com.example.backend.hotel.dto.HotelDto;
@@ -24,7 +25,9 @@ public class HotelService {
 
     public HotelDto createHotel(HotelRequestDto request) {
         City city = cityRepository.findById(request.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException("City not found with id: " + request.getCityId()));
+                .orElseThrow(() ->
+                        HotelException.CITY_NOT_FOUND.getException()
+                );
 
         Hotel hotel = new Hotel();
         updateHotelEntityFromRequest(hotel, request);
@@ -51,7 +54,9 @@ public class HotelService {
 
     public HotelDto updateHotel(Long hotelId, HotelRequestDto request) {
         Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id: " + hotelId));
+                .orElseThrow(() ->
+                        HotelException.HOTEL_NOT_FOUND.getException()
+                );
 
         updateHotelEntityFromRequest(hotel, request);
 
@@ -82,7 +87,7 @@ public class HotelService {
 
     public void deleteHotel(Long hotelId) {
         if (!hotelRepository.existsById(hotelId)) {
-            throw new EntityNotFoundException("Hotel not found with id: " + hotelId);
+            throw HotelException.HOTEL_NOT_FOUND.getException();
         }
         hotelRepository.deleteById(hotelId);
     }
@@ -148,7 +153,9 @@ public class HotelService {
     @Transactional(readOnly = true) // 조회이므로 readOnly = true
     public HotelDto getHotelById(Long hotelId) {
         Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id: " + hotelId));
+                .orElseThrow(() ->
+                        HotelException.HOTEL_NOT_FOUND.getException()
+                );
 
         // 이전에 만들어둔 변환 헬퍼 메소드를 재사용합니다.
         return convertToHotelDto(hotel);

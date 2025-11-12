@@ -22,8 +22,7 @@ EXPOSE 8888
 
 # Run the application
 ENTRYPOINT ["java", \
-  "-jar", \
   "-XX:+UseContainerSupport", \
   "-XX:MaxRAMPercentage=75.0", \
-  "-Dspring.profiles.active=prod", \
+  "-jar", \
   "backend.jar"]

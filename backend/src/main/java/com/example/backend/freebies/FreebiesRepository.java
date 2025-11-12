@@ -1,9 +1,9 @@
 package com.example.backend.freebies;
 
-import com.example.backend.amenities.entity.Amenities;
+import com.example.backend.freebies.entity.Freebies;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FreebiesRepository extends JpaRepository<Amenities, Long> {
+public interface FreebiesRepository extends JpaRepository<Freebies, Long> {
 
 
 }
