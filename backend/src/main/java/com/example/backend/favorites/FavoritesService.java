@@ -1,5 +1,10 @@
 package com.example.backend.favorites;
 
+import com.example.backend.common.exception.HotelException;
+import com.example.backend.common.exception.MemberException;
+import com.example.backend.hotel.HotelService;
+import com.example.backend.hotel.hotelfilters.HotelFiltersService;
+import com.example.backend.hotel.hotelfilters.detail.HotelDetailService;
 import com.example.backend.hotel.hotelfilters.dto.HotelFiltersDto;
 import com.example.backend.favorites.entity.Favorites;
 import com.example.backend.hotel.HotelRepository;
@@ -27,6 +32,8 @@ public class FavoritesService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final HotelRepository hotelRepository;
+    private final HotelFiltersService  hotelFiltersService;
+    private final HotelDetailService hotelDetailService;
 
 
     public List<HotelFiltersDto> getFavoriteHotels(Long userId) {
@@ -43,13 +50,12 @@ public class FavoritesService {
                     List<String> hotelImageUrls = h.getImages().stream()
                             .map(HotelImage::getImageUrl)
                             .toList();
-
                     return new HotelFiltersDto(
                             h.getId(),
                             h.getName(),
                             h.getAddress(),
                             h.getGrade(),
-                            countAmenities(h),
+                            hotelDetailService.countAmenities(h),
                             getLowestAvailablePrice(h),
                             avgRating,
                             hotelImageUrls,
@@ -73,9 +79,13 @@ public class FavoritesService {
         } else {
             // 3. 존재하지 않으면, 찜 목록에 추가
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다. ID: " + userId));
+                    .orElseThrow(() ->
+                            MemberException.USER_NOT_FOUND.getException()
+                    );
             Hotel hotel = hotelRepository.findById(hotelId)
-                    .orElseThrow(() -> new RuntimeException("해_당 호텔을 찾을 수 없습니다. ID: " + hotelId));
+                    .orElseThrow(() ->
+                            HotelException.HOTEL_NOT_FOUND.getException()
+                    );
 
             Favorites newFavorite = new Favorites();
             newFavorite.setUser(user);
@@ -84,29 +94,6 @@ public class FavoritesService {
             favoritesRepository.save(newFavorite);
             return true; // 찜 추가됨
         }
-    }
-    // 호텔이 가지고 있는 무료 서비스 + 편의시설 카운트
-    private int countAmenities(Hotel h) {
-        int count = 0;
-        // Freebies
-        if (h.getFreebies().isBreakfastIncluded()) count++;
-        if (h.getFreebies().isFreeParking()) count++;
-        if (h.getFreebies().isFreeWifi()) count++;
-        if (h.getFreebies().isAirportShuttlebus()) count++;
-        if (h.getFreebies().isFreeCancellation()) count++;
-
-        // Amenities
-        if (h.getAmenities().isFrontDesk24()) count++;
-        if (h.getAmenities().isAirConditioner()) count++;
-        if (h.getAmenities().isFitnessCenter()) count++;
-        if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++; // 수영장 합치기
-        if (h.getAmenities().isSpaWellnessCenter()) count++;
-        if (h.getAmenities().isRestaurant()) count++;
-        if (h.getAmenities().isRoomservice()) count++;
-        if (h.getAmenities().isBarLounge()) count++;
-        if (h.getAmenities().isTeaCoffeeMachine()) count++;
-
-        return count;
     }
 
     // 가격 최저값 계산

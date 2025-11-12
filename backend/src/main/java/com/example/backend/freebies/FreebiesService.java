@@ -1,6 +1,7 @@
 package com.example.backend.freebies;
 
 
+import com.example.backend.common.exception.HotelException;
 import com.example.backend.freebies.dto.FreebiesDto;
 import com.example.backend.freebies.entity.Freebies;
 import com.example.backend.hotel.HotelRepository;
@@ -22,7 +23,9 @@ public class FreebiesService {
 
     public FreebiesDto updateFreebies(Long hotelId, FreebiesDto freebiesDto) {
         Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id: " + hotelId));
+                .orElseThrow(() ->
+                                HotelException.HOTEL_NOT_FOUND.getException()
+                );
 
         Freebies freebies = hotel.getFreebies();
         if (freebies == null) {

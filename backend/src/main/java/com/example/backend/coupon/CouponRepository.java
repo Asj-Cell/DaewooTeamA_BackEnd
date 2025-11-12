@@ -3,10 +3,12 @@ package com.example.backend.coupon;
 import com.example.backend.coupon.entity.Coupon;
 import com.example.backend.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
     /**
      * 사용자가 사용 가능한(사용 안 함, 만료되지 않음) 쿠폰 목록을 조회합니다.
@@ -15,4 +17,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
      * @return 사용 가능한 쿠폰 리스트
      */
     List<Coupon> findByUserAndIsUsedFalseAndExpiryDateAfter(User user, LocalDate today);
+
+    boolean existsByUserAndName(User user, String name);
 }

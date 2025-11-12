@@ -1,5 +1,6 @@
 package com.example.backend.pay;
 
+import com.example.backend.common.exception.PayException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -24,7 +25,7 @@ public class TossPaymentsService {
     /**
      * 토스페이먼츠 결제 승인 요청
      */
-    public JSONObject confirmPayment(String paymentKey, String orderId, Long amount) throws Exception {
+    public JSONObject confirmPayment(String paymentKey, String orderId, Long amount) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
         JSONObject params = new JSONObject();
@@ -38,14 +39,14 @@ public class TossPaymentsService {
         try {
             return restTemplate.postForObject(url, request, JSONObject.class);
         } catch (Exception e) {
-            throw new Exception("토스페이먼츠 결제 승인에 실패했습니다: " + e.getMessage());
+            throw PayException.TOSS_CONFIRM_FAILED.getException();
         }
     }
 
     /**
      * 토스페이먼츠 결제 취소 요청
      */
-    public JSONObject cancelPayment(String paymentKey, String cancelReason) throws Exception {
+    public JSONObject cancelPayment(String paymentKey, String cancelReason) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
         JSONObject params = new JSONObject();
@@ -53,9 +54,11 @@ public class TossPaymentsService {
 
         String url = TOSS_API_URL + paymentKey + "/cancel";
         HttpEntity<String> request = new HttpEntity<>(params.toString(), headers);
-
-
+        try {
             return restTemplate.postForObject(url, request, JSONObject.class);
+        } catch (Exception e) {
+            throw PayException.TOSS_CANCEL_FAILED.getException();
+        }
 
     }
 

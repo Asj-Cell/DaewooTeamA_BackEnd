@@ -1,10 +1,9 @@
 package com.example.backend.coupon;
 
+import com.example.backend.common.exception.MemberException;
 import com.example.backend.coupon.dto.CouponDto;
-import com.example.backend.coupon.CouponService; // CouponService 임포트
 import com.example.backend.user.UserRepository;
 import com.example.backend.user.entity.User;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,10 +45,12 @@ public class CouponController {
     // UserDetails에서 User 엔티티를 찾아오는 헬퍼 메소드
     private User findUserFromUserDetails(UserDetails userDetails) {
         if (userDetails == null) {
-            throw new SecurityException("로그인이 필요합니다.");
+            throw MemberException.LOGIN_REQUIRED.getException();
         }
         Long userId = Long.parseLong(userDetails.getUsername());
         return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException()
+                );
     }
 }

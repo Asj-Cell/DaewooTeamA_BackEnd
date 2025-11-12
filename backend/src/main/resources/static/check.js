@@ -2,14 +2,14 @@
 const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm"; // Replace with your actual client key
 
 // ⭐ 쿠폰 ID 1번 (5,000원 할인)을 사용한다고 가정합니다.
-const couponId = 1;
+const couponId = null;
 // ⭐ 원래 금액(555,000)에서 5,000원을 뺀 금액을 설정합니다.
-const amount = { currency: "KRW", value: 550000 };
+const amount = { currency: "KRW", value: 555000 };
 
 // ⭐ 예약 정보 (These should eventually be dynamic)
 const roomId = 1;
-const checkInDate = "2025-07-07"; // Replace with actual check-in date
-const checkOutDate = "2025-07-09"; // Replace with actual check-out date
+const checkInDate = "2025-03-07"; // Replace with actual check-in date
+const checkOutDate = "2025-03-09"; // Replace with actual check-out date
 
 // ✅ 2. import 대신 TossPayments를 직접 사용합니다.
 const tossPayments = TossPayments(clientKey);
