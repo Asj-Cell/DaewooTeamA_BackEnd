@@ -32,7 +32,6 @@ public class FavoritesService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final HotelRepository hotelRepository;
-    private final HotelFiltersService  hotelFiltersService;
     private final HotelDetailService hotelDetailService;
 
 
@@ -56,7 +55,7 @@ public class FavoritesService {
                             h.getAddress(),
                             h.getGrade(),
                             hotelDetailService.countAmenities(h),
-                            getLowestAvailablePrice(h),
+                            hotelDetailService.getLowestAvailablePrice(h),
                             avgRating,
                             hotelImageUrls,
                             true, // 찜 여부 무조건 true
@@ -96,12 +95,5 @@ public class FavoritesService {
         }
     }
 
-    // 가격 최저값 계산
-    private BigDecimal getLowestAvailablePrice(Hotel h) {
-        return h.getRooms().stream()
-                .map(Room::getPrice)
-                .min(BigDecimal::compareTo)
-                .orElse(BigDecimal.ZERO);
-    }
 
 }

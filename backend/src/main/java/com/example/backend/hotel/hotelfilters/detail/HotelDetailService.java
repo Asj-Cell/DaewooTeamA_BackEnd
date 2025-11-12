@@ -2,6 +2,7 @@ package com.example.backend.hotel.hotelfilters.detail;
 
 import com.example.backend.common.exception.HotelException;
 import com.example.backend.favorites.FavoritesRepository;
+import com.example.backend.favorites.FavoritesService;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.HotelRepositoryImpl;
 import com.example.backend.hotel.entity.Hotel;
@@ -71,8 +72,8 @@ public class HotelDetailService {
                 hotel.getName(),
                 hotel.getAddress(),
                 hotel.getGrade(),
-                hotelFiltersService.countAmenities(hotel),
-                getLowestRoomPrice(hotel),
+                countAmenities(hotel),
+                getLowestAvailablePrice(hotel),
                 avgRating,
                 hotelImageUrls,
                 isFavorite,
@@ -84,6 +85,25 @@ public class HotelDetailService {
                 hotel.getOverview(),
                 roomImageUrls
         );
+    }
+
+    public int countAmenities(Hotel h) {
+        int count = 0;
+        if (h.getFreebies().isBreakfastIncluded()) count++;
+        if (h.getFreebies().isFreeParking()) count++;
+        if (h.getFreebies().isFreeWifi()) count++;
+        if (h.getFreebies().isAirportShuttlebus()) count++;
+        if (h.getFreebies().isFreeCancellation()) count++;
+        if (h.getAmenities().isFrontDesk24()) count++;
+        if (h.getAmenities().isAirConditioner()) count++;
+        if (h.getAmenities().isFitnessCenter()) count++;
+        if (h.getAmenities().isOutdoorPool() || h.getAmenities().isIndoorPool()) count++;
+        if (h.getAmenities().isSpaWellnessCenter()) count++;
+        if (h.getAmenities().isRestaurant()) count++;
+        if (h.getAmenities().isRoomservice()) count++;
+        if (h.getAmenities().isBarLounge()) count++;
+        if (h.getAmenities().isTeaCoffeeMachine()) count++;
+        return count;
     }
 
     private List<String> getAmenitiesList(Hotel h) {
@@ -111,6 +131,13 @@ public class HotelDetailService {
 
     }
 
+    // 가격 최저값 계산
+    public BigDecimal getLowestAvailablePrice(Hotel h) {
+        return h.getRooms().stream()
+                .map(Room::getPrice)
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+    }
 
     // [추가] 예약 가능 여부를 확인하는 헬퍼 메서드
     private boolean isRoomAvailable(Room room, LocalDate checkIn, LocalDate checkOut) {
