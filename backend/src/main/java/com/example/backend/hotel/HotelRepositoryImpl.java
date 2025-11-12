@@ -85,7 +85,7 @@ public class HotelRepositoryImpl implements HotelRepositoryCustom {
                             .from(subRoomForMinPrice)
                             .where(minPriceSubQueryCondition),
                     Expressions.constant(BigDecimal.ZERO)
-            ).as("minAvailablePrice");
+            );
 
 
             // 편의시설 개수 계산 (호텔 그룹별)
