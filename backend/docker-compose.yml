@@ -26,7 +26,7 @@ services:
       retries: 5
 
   boot-app:
-    image: asjcell/backend_image:v1.1.13
+    image: gustj5020/backend_image:1.0.13
     container_name: boot_container
     ports:
       - "18888:8888"
@@ -41,16 +41,16 @@ services:
     networks:
       - mjc_network
 
-  front-app:
-    image: dldptj/front_image:v1.0.12
-    container_name: front_container
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - boot-app
-    networks:
-      - mjc_network
+#  front-app:
+#    image: dldptj/front_image:v1.0.12
+#    container_name: front_container
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    depends_on:
+#      - boot-app
+#    networks:
+#      - mjc_network
 
 networks:
   mjc_network:
