@@ -5,11 +5,18 @@ spring:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
   application:
     name: booking-backend
-
+  sql:
+    init:
+      mode: always  # 로컬에서는 매번 실행
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
   # --- JPA 공통 설정 ---
   jpa:
+    hibernate:
+      ddl-auto: none
     properties:
       hibernate:
+
         format_sql: true
         show_sql: false
         jdbc:

@@ -19,8 +19,6 @@ spring:
 
   # --- 운영 JPA 설정 ---
   jpa:
-    hibernate:
-      ddl-auto: validate  # 운영환경에서는 validate 권장
     show-sql: false
     properties:
       hibernate:
