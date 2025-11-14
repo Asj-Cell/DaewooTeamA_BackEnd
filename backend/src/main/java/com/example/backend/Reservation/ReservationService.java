@@ -1,5 +1,7 @@
 package com.example.backend.Reservation;
 
+import com.example.backend.common.exception.CouponException;
+import com.example.backend.common.exception.HotelException;
 import com.example.backend.coupon.CouponRepository;
 import com.example.backend.coupon.entity.Coupon;
 import com.example.backend.hotel.entity.Hotel;
@@ -36,7 +38,8 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public PaymentPageDto getPaymentPreviewDetails(Long roomId, LocalDate checkInDate, LocalDate checkOutDate, Long couponId, User user) {
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found"));
+        Room room = roomRepository.findById(roomId).orElseThrow(() ->
+                HotelException.ROOM_NOT_FOUND.getException());
         ReviewPageTotalInfoDto reviewInfo = reviewService.getReviewTotalCountAndRating(room.getHotel().getId());
 
         long nights = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
@@ -51,7 +54,8 @@ public class ReservationService {
         if (user != null && couponId != null) {
             // 쿠폰을 조회하고 검증합니다.
             Coupon coupon = couponRepository.findById(couponId)
-                    .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + couponId));
+                    .orElseThrow(() ->
+                            CouponException.COUPON_NOT_FOUND.getException());
 
             // 쿠폰이 이 사용자의 것이고 유효한지 검사
             if (isCouponValid(coupon, user)) {
