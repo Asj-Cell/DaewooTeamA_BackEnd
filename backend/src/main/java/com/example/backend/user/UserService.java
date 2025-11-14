@@ -2,6 +2,7 @@ package com.example.backend.user;
 
 import com.example.backend.Reservation.Reservation;
 import com.example.backend.Reservation.ReservationRepository;
+import com.example.backend.common.exception.MemberException;
 import com.example.backend.common.util.FileStorageService;
 import com.example.backend.pay.entity.Pay;
 import com.example.backend.pay.PayRepository;
@@ -31,21 +32,22 @@ public class UserService {
     public void changeUserPassword(Long userId, ChangePasswordRequestDto requestDto) {
         // 1. 새 비밀번호와 확인용 비밀번호가 일치하는지 확인
         if (!requestDto.getNewPassword().equals(requestDto.getConfirmNewPassword())) {
-            throw new IllegalArgumentException("새 비밀번호가 일치하지 않습니다.");
+            throw MemberException.NOT_EQUAL_NEW_PW.getException();
         }
 
         // 2. 사용자 정보 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException());
 
         // 소셜 로그인 사용자인 경우 비밀번호 변경 불가
         if (user.getProvider() != null && !user.getProvider().isEmpty()) {
-            throw new IllegalArgumentException("소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
+            throw MemberException.DONT_CHANGE_PW.getException();
         }
 
         // 3. 현재 비밀번호가 맞는지 확인 (매우 중요!)
         if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
+            throw MemberException.NOT_EQUAL_PW.getException();
         }
 
         // 4. 새 비밀번호를 암호화하여 저장
@@ -56,7 +58,8 @@ public class UserService {
     @Transactional
     public String updateUserProfileImage(Long userId, MultipartFile imageFile) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException());
 
         // 파일을 서버에 저장하고 웹 경로를 받아옴
         String imageUrl = fileStorageService.storeFile(imageFile);
@@ -71,7 +74,8 @@ public class UserService {
     @Transactional
     public String updateUserBackgroundImage(Long userId, MultipartFile imageFile) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException());
 
         // 파일을 서버에 저장하고 웹 경로를 받아옴
         String backgroundImageUrl = fileStorageService.storeFile(imageFile);
@@ -86,7 +90,8 @@ public class UserService {
     @Transactional
     public UserProfileAllResponseDto updateUserProfileInfo(Long userId, UserProfileRequestDto requestDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException());
 
         // DTO에 포함된 모든 필드를 업데이트하도록 로직 확장
         // 요청에 값이 있는 경우에만 업데이트하여 부분 수정이 가능하도록 함
@@ -115,14 +120,16 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserProfileAllResponseDto getUserProfileAll(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException());
         return new UserProfileAllResponseDto(user);
     }
     @Transactional(readOnly = true)
     public UserProfileResponseDto getUserProfile(Long userId) {
         // ID로 사용자를 찾고, 없으면 예외를 발생시킵니다.
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException());
 
         // User 엔티티를 UserProfileResponseDto로 변환하여 반환합니다.
         return new UserProfileResponseDto(user);

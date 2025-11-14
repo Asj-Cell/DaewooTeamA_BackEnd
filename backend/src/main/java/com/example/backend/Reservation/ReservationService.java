@@ -70,9 +70,6 @@ public class ReservationService {
                 .map(HotelImage::getImageUrl) // HotelImage.java의 imageUrl 필드 사용
                 .collect(Collectors.toList());
 
-        // 2. 룸 이미지 URL (String) 추출 (첫 번째 이미지)
-        // room.getImages()는 List<RoomImage>를 반환한다고 가정합니다.
-        // RoomImage 엔티티도 HotelImage와 같이 getImageUrl() 메서드가 있어야 합니다.
         List<RoomImg> roomImages = room.getImages(); // 프록시 초기화 (가정)
         String firstRoomImageUrl = null;
         if (roomImages != null && !roomImages.isEmpty()) {
@@ -88,7 +85,7 @@ public class ReservationService {
                 .subtotal(subtotal)
                 .taxes(taxes)
                 .serviceFee(serviceFee)
-                .discount(discount) // <-- 2025-10-22 [수정] DTO에 할인 금액 전달
+                .discount(discount)
                 .totalPrice(totalPrice)
                 .reviewCount(reviewInfo.getTotalReviews())
                 .avgRating(reviewInfo.getAverageRating())
