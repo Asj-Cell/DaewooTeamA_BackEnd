@@ -78,4 +78,20 @@ public class ReviewService {
                 .orElseThrow(() -> new IllegalArgumentException("삭제 권한이 없거나 리뷰를 찾을 수 없습니다."));
         reviewRepository.delete(review);
     }
+
+    @Transactional
+    public void reportReview(Long reviewId, Long userId) {
+        // 1. 리뷰 조회
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
+
+        // 2. 이미 신고된 리뷰인지 확인
+        if (review.getReportYn()) {
+            throw new IllegalStateException("이미 신고 처리된 리뷰입니다.");
+        }
+
+        // 3. 신고 처리
+        review.setReportYn(true);
+        reviewRepository.save(review);
+    }
 }
