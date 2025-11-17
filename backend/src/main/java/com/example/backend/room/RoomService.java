@@ -1,5 +1,6 @@
 package com.example.backend.room;
 
+import com.example.backend.common.exception.HotelException;
 import com.example.backend.hotel.HotelRepository;
 import com.example.backend.hotel.entity.Hotel;
 import com.example.backend.room.dto.RoomDto;
@@ -31,7 +32,8 @@ public class RoomService {
      */
     public RoomDto createRoom(Long hotelId, RoomRequestDto request) {
         Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new EntityNotFoundException("Hotel not found with id: " + hotelId));
+                .orElseThrow(() ->
+                        HotelException.HOTEL_NOT_FOUND.getException());
 
         Room room = new Room();
         updateRoomEntityFromRequest(room, request);
@@ -49,8 +51,8 @@ public class RoomService {
      */
     public RoomDto updateRoom(Long roomId, RoomRequestDto request) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + roomId));
-
+                .orElseThrow(() ->
+                        HotelException.ROOM_NOT_FOUND.getException());
         updateRoomEntityFromRequest(room, request);
         // @Transactional에 의해 메소드 종료 시 자동 업데이트
         return convertToDto(room);
@@ -62,7 +64,7 @@ public class RoomService {
      */
     public void deleteRoom(Long roomId) {
         if (!roomRepository.existsById(roomId)) {
-            throw new EntityNotFoundException("Room not found with id: " + roomId);
+            throw HotelException.ROOM_NOT_FOUND.getException();
         }
         roomRepository.deleteById(roomId);
     }
@@ -77,7 +79,8 @@ public class RoomService {
     // 특정 룸 조회
     public RoomDto getRoomById(Long id) {
         Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
+                .orElseThrow(() ->
+                        HotelException.ROOM_NOT_FOUND.getException());
         return convertToDto(room);
     }
 

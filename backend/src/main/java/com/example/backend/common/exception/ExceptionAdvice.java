@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Map;
 
 @RestControllerAdvice
-public class MemberExceptionAdvice {
+public class ExceptionAdvice {
 
     @ExceptionHandler(CommonExceptionTemplate.class)
     public ResponseEntity<Map<String, Object>> handlerMemberException(CommonExceptionTemplate ex) {

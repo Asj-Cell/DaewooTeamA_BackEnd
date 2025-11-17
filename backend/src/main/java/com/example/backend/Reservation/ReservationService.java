@@ -1,5 +1,7 @@
 package com.example.backend.Reservation;
 
+import com.example.backend.common.exception.CouponException;
+import com.example.backend.common.exception.HotelException;
 import com.example.backend.coupon.CouponRepository;
 import com.example.backend.coupon.entity.Coupon;
 import com.example.backend.hotel.entity.Hotel;
@@ -36,7 +38,8 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public PaymentPageDto getPaymentPreviewDetails(Long roomId, LocalDate checkInDate, LocalDate checkOutDate, Long couponId, User user) {
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found"));
+        Room room = roomRepository.findById(roomId).orElseThrow(() ->
+                HotelException.ROOM_NOT_FOUND.getException());
         ReviewPageTotalInfoDto reviewInfo = reviewService.getReviewTotalCountAndRating(room.getHotel().getId());
 
         long nights = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
@@ -51,7 +54,8 @@ public class ReservationService {
         if (user != null && couponId != null) {
             // 쿠폰을 조회하고 검증합니다.
             Coupon coupon = couponRepository.findById(couponId)
-                    .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + couponId));
+                    .orElseThrow(() ->
+                            CouponException.COUPON_NOT_FOUND.getException());
 
             // 쿠폰이 이 사용자의 것이고 유효한지 검사
             if (isCouponValid(coupon, user)) {
@@ -66,9 +70,6 @@ public class ReservationService {
                 .map(HotelImage::getImageUrl) // HotelImage.java의 imageUrl 필드 사용
                 .collect(Collectors.toList());
 
-        // 2. 룸 이미지 URL (String) 추출 (첫 번째 이미지)
-        // room.getImages()는 List<RoomImage>를 반환한다고 가정합니다.
-        // RoomImage 엔티티도 HotelImage와 같이 getImageUrl() 메서드가 있어야 합니다.
         List<RoomImg> roomImages = room.getImages(); // 프록시 초기화 (가정)
         String firstRoomImageUrl = null;
         if (roomImages != null && !roomImages.isEmpty()) {
@@ -84,7 +85,7 @@ public class ReservationService {
                 .subtotal(subtotal)
                 .taxes(taxes)
                 .serviceFee(serviceFee)
-                .discount(discount) // <-- 2025-10-22 [수정] DTO에 할인 금액 전달
+                .discount(discount)
                 .totalPrice(totalPrice)
                 .reviewCount(reviewInfo.getTotalReviews())
                 .avgRating(reviewInfo.getAverageRating())
