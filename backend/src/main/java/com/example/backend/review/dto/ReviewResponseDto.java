@@ -5,12 +5,14 @@ import lombok.Getter;
 
 @Getter
 public class ReviewResponseDto {
+    private final Long userId;
     private final String userName;
     private final String content;
     private final Double userRatingScore;
     private final String imageUrl; // 사용자 프로필 이미지 url ...
 
     public ReviewResponseDto(Review review) {
+        this.userId = review.getUser().getId();
         this.userName = review.getUser().getUserName();
         this.content = review.getContent();
         this.userRatingScore = review.getUserRatingScore();
