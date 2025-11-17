@@ -1,5 +1,6 @@
 package com.example.backend.Reservation;
 
+import com.example.backend.common.exception.MemberException;
 import com.example.backend.pay.dto.PaymentPageDto;
 import com.example.backend.user.UserRepository;
 import com.example.backend.user.entity.User;
@@ -53,10 +54,11 @@ public class ReservationController {
     private User findUserFromUserDetails(UserDetails userDetails) {
         if (userDetails == null) {
             // 로그인을 확인하겠습니다
-            return null;
+            throw MemberException.LOGIN_REQUIRED.getException();
         }
         Long userId = Long.parseLong(userDetails.getUsername());
         return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() ->
+                        MemberException.USER_NOT_FOUND.getException());
     }
 }

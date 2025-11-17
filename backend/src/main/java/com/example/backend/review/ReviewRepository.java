@@ -3,6 +3,7 @@ package com.example.backend.review;
 import com.example.backend.review.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    // 특정 호텔의 리뷰를 최신순으로 페이징하여 조회
+    @EntityGraph(attributePaths = {"user"})
     Page<Review> findByHotelIdOrderByIdDesc(Long hotelId, Pageable pageable);
 
     // 특정 호텔의 전체 리뷰 수 조회
