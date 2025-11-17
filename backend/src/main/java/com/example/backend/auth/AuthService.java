@@ -37,7 +37,8 @@ public class AuthService {
         user.setEmail(signupRequestDto.getEmail());
         user.setPassword(passwordEncoder.encode(signupRequestDto.getPassword()));
         user.setPhoneNumber(signupRequestDto.getPhoneNumber());
-
+        user.setImageUrl("/images/testuser/DefaultUserImage.png");
+        user.setBackGroundImageUrl("/images/testuser/DefaultBackGroundImage.jpg");
         userRepository.save(user);
     }
 
