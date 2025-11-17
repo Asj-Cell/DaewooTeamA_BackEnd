@@ -10,6 +10,7 @@ public class ReviewResponseDto {
     private final String content;
     private final Double userRatingScore;
     private final String imageUrl; // 사용자 프로필 이미지 url ...
+    private final Long reviewId;
 
     public ReviewResponseDto(Review review) {
         this.userId = review.getUser().getId();
@@ -17,5 +18,6 @@ public class ReviewResponseDto {
         this.content = review.getContent();
         this.userRatingScore = review.getUserRatingScore();
         this.imageUrl = review.getUser().getImageUrl();
+        this.reviewId = review.getId();
     }
 }
