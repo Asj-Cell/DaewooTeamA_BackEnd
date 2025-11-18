@@ -15,6 +15,7 @@ public class UserProfileAllResponseDto {
     private final LocalDate birthDate;
     private final String imageUrl;
     private final String backGroundImageUrl;
+    private final String provider;
 
     public UserProfileAllResponseDto(User user) {
         this.userId = user.getId();
@@ -25,5 +26,6 @@ public class UserProfileAllResponseDto {
         this.birthDate = user.getBirthDate();
         this.imageUrl = user.getImageUrl();
         this.backGroundImageUrl = user.getBackGroundImageUrl();
+        this.provider = user.getProvider();
     }
 }

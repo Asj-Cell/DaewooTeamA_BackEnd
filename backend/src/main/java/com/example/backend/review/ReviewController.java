@@ -7,6 +7,7 @@ import com.example.backend.review.dto.ReviewResponseDto;
 import com.example.backend.review.dto.ReviewUpdateDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -70,5 +71,23 @@ public class ReviewController {
         Long userId = Long.parseLong(userDetails.getUsername());
         reviewService.deleteReview(reviewId, userId);
         return ResponseEntity.ok(ApiResponse.success("리뷰(ID: " + reviewId + ")가 성공적으로 삭제되었습니다."));
+    }
+
+    @Operation(summary = "리뷰 신고",
+            description = "리뷰를 신고합니다. 이미 신고된 리뷰는 중복 신고할 수 없습니다.")
+    @PostMapping("/{reviewId}/report")
+    public ResponseEntity<ApiResponse<String>> reportReview(
+            @PathVariable Long reviewId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        // 1. 현재 로그인한 사용자 ID 추출
+        Long userId = Long.parseLong(userDetails.getUsername());
+
+        // 2. 신고 처리 서비스 호출
+        reviewService.reportReview(reviewId, userId);
+
+        // 3. 성공 응답 반환
+        return ResponseEntity.ok(
+                ApiResponse.success("리뷰(ID: " + reviewId + ")가 성공적으로 신고 처리되었습니다.")
+        );
     }
 }

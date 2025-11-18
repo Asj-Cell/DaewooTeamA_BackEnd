@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class ReviewResponseDto {
+    private final Long userId;
     private final String userName;
     private final String content;
     private final Double userRatingScore;
@@ -12,6 +13,7 @@ public class ReviewResponseDto {
     private final Long reviewId;
 
     public ReviewResponseDto(Review review) {
+        this.userId = review.getUser().getId();
         this.userName = review.getUser().getUserName();
         this.content = review.getContent();
         this.userRatingScore = review.getUserRatingScore();
