@@ -15,13 +15,15 @@ import com.example.backend.review.ReviewRepository;
 import com.example.backend.user.UserRepository;
 import com.example.backend.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import static com.example.backend.favorites.entity.QFavorites.favorites;
+import org.springframework.data.domain.Page;
 
 @Service
 @RequiredArgsConstructor
@@ -35,36 +37,34 @@ public class FavoritesService {
     private final HotelDetailService hotelDetailService;
 
 
-    public List<HotelFiltersDto> getFavoriteHotels(Long userId) {
-        List<Favorites> favorites = favoritesRepository.findAllByUser_Id(userId);
+    public Page<HotelFiltersDto> getFavoriteHotels(Long userId, Pageable pageable) {
+        Page<Favorites> page = favoritesRepository.findAllByUser_Id(userId, pageable);
 
-        return favorites.stream()
-                .map(fav -> {
-                    Hotel h = fav.getHotel();
+        return page.map(fav -> {
+            Hotel h = fav.getHotel();
+            Double totalRating = reviewRepository.findTotalRatingByHotelId(h.getId());
+            long reviewCount = reviewRepository.countByHotelId(h.getId());
+            double avgRating = (totalRating != null && reviewCount > 0) ? totalRating / reviewCount : 0.0;
 
-                    Double totalRating = reviewRepository.findTotalRatingByHotelId(h.getId());
-                    long reviewCount = reviewRepository.countByHotelId(h.getId());
-                    double avgRating = (totalRating != null && reviewCount > 0) ? totalRating / reviewCount : 0.0;
+            List<String> hotelImageUrls = h.getImages().stream()
+                    .map(HotelImage::getImageUrl)
+                    .toList();
 
-                    List<String> hotelImageUrls = h.getImages().stream()
-                            .map(HotelImage::getImageUrl)
-                            .toList();
-                    return new HotelFiltersDto(
-                            h.getId(),
-                            h.getName(),
-                            h.getAddress(),
-                            h.getGrade(),
-                            hotelDetailService.countAmenities(h),
-                            hotelDetailService.getLowestAvailablePrice(h),
-                            avgRating,
-                            hotelImageUrls,
-                            true, // 찜 여부 무조건 true
-                            reviewCount,
-                            h.getCity().getCityName(),
-                            h.getCity().getCountry()
-                    );
-                })
-                .collect(Collectors.toList());
+            return new HotelFiltersDto(
+                    h.getId(),
+                    h.getName(),
+                    h.getAddress(),
+                    h.getGrade(),
+                    hotelDetailService.countAmenities(h),
+                    hotelDetailService.getLowestAvailablePrice(h),
+                    avgRating,
+                    hotelImageUrls,
+                    true,
+                    reviewCount,
+                    h.getCity().getCityName(),
+                    h.getCity().getCountry()
+            );
+        });
     }
     @Transactional // 데이터를 변경하는 작업이므로 readOnly가 아닌 Transactional 추가
     public boolean toggleFavorite(Long userId, Long hotelId) {
