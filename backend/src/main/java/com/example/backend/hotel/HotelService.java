@@ -63,7 +63,8 @@ public class HotelService {
         // 연관된 City 정보도 업데이트가 필요하다면 로직 추가
         if (!hotel.getCity().getId().equals(request.getCityId())) {
             City city = cityRepository.findById(request.getCityId())
-                    .orElseThrow(() -> new EntityNotFoundException("City not found with id: ".concat(request.getCityId().toString())));
+                    .orElseThrow(() ->
+                            HotelException.CITY_NOT_FOUND.getException());
             hotel.setCity(city);
         }
 
